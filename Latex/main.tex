@@ -1,0 +1,53 @@
+\documentclass{article}
+% \usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\graphicspath{{images/}}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{dirtytalk} % The say command is equivalent to `'
+\bibliographystyle{IEEEtranSA}
+\usepackage{import}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{naturalnames}{hyperref}
+
+\title{Algorithmic Approach to 15 Minute City}
+\author{Marco Lam}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+\import{sections/}{1_intro}
+
+\section{Problem Statement}
+
+\import{sections/}{2_problem_statement}
+
+\section{Previous Work}
+
+\import{sections/}{3_previous_work}
+
+\section{Algorithms}
+
+\import{sections/}{4_algorithms}
+
+\section{Proposed solution}
+
+\import{sections/}{5_proposed_solution}
+
+\bibliography{reference, reference_manual}
+
+\end{document}

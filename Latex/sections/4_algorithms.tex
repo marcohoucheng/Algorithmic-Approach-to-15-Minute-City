@@ -1,0 +1,23 @@
+Breadth-First Search (BFS) and Depth-First Search (DFS), along with Prim's algorithm, Kruskal's algorithm, and Dijkstra's algorithm, are fundamental graph algorithms used in various applications across computer science and related fields. Here's a brief overview of their use cases.
+
+\subsection{Breadth-first Search (BFS)}
+
+Breadth-first Search algorithm is a single-source graph search algorithm where the graph contains unweighted, undirected edges. The algorithm searches the graph from the source node level by level, that means the algorithm will search all nodes adjacent to the source node, before moving on to searching all nodes adjacent to these nodes. The visited nodes will be marked so that the algorithm will not be stuck in a cycle. The algorithm can be used to determine the connected components of a graph and search for cycles. An example of an application of this algorithm is maze solving, where it can be used to find the shortest path through a maze from the source node (i.e. entrance/exit).
+
+\subsection{Depth-First Search (DFS)}
+
+Depth-First Search algorithm is another popular single-source graph search algorithm for graphs with unweighted, undirected edges. Depth-First Search starts from the source node, travels along one of its edges and visits the adjacent node, the algorithm then repeats the process to this adjacent node and so on. Once the algorithm gets to the final node (i.e. there are no edges connected to this node where the adjacent node has not been visited), the algorithm travels to the previous level and checks if that node has an alternate adjacent node through a different edge. This process is then repeated until all nodes have been visited which can be reached to from our source node. Similar to  Breadth-first Search algorithm, this algorithm can be used to detect connected components of a graph and search for cycles.
+
+\subsection{Prim's Algorithm}
+
+Prim algorithm is used for finding the minimum spanning tree (MST) within a weighted, undirected graph. A minimum spanning tree is a subset of the edges of a connected, weighted and undirected graph that connects all the nodes together, without any cycles and with the least possible total edge weight. Prim's algorithm starts from the source node, it keeps a record of the nodes it has selected. It then repeatedly search for the edge with the smallest weight that connects a node from the selected set and a node from outside of this set. Prim is a greedy algorithm and an example of an application is used in network design problems to find the minimum cost to connect all nodes in a network.
+
+\subsection{Kruskal's Algorithm}
+
+Kruskal's algorithm is similar to Prim algorithm that it is a greedy algorithm which finds a minimum spanning tree in a weighted, undirected graph. The algorithm finds and records the minimum weighted edge, and selects the 2 nodes connected by the edge. It then searches and records for the next smallest weighted edge and select the nodes connected by it. The algorithm repeats the process until all nodes have been selected and the edges recorded form the minimum spanning tree. Kruskal's algorithm can be used in clustering problems where the objective is to group similar items together while minimising the total dissimilarity.
+
+\subsection{Dijkstra's Algorithm} \label{dijkstra}
+
+Dijkstra's algorithm is a search algorithm which finds the shortest path from a single source node to all other nodes in a non-negative weighted graph.
+
+Dijkstra's algorithm begins from the source node, in every iteration, Dijkstra's algorithm considers all of the current node's neighbours and update their tentative distances through the current node. If this distance is smaller than the previously assigned distance then update the assigned distance to the new one. The current node is then marked as visited and its tentative distance is then fixed. The algorithm then repeat the same steps on each of the neighbour nodes in the ascending order of their temporary tentative distances, until all nodes in the graph have been visited. Two applications for this algorithm would be network routing to find the shortest paths in computer networks and GPS navigation to find the shortest route between two locations.
