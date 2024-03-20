@@ -1,12 +1,64 @@
-Our first proposed solution is to represent the area of interest as a graph. Barbieri et al. proposed to use a planar graph \cite{barbieri_graph_2023}. However, it is not clear if a planar graph would be able to represent bridges/tunnels etc effectively, as the definition of a planar graph is that it can be drawn on the plane in such a way that its edges intersect only at their endpoints.
+\begin{algorithm}[!h]
+    \caption{15-Minute City Algorithm}\label{alg:15mc}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a list $S$ of service vertices of $n$ types and a time threshold $t$\\
+    \textbf{Output} Set $R$ of vertices reachable by at most $t$ minutes
+    \begin{algorithmic}
+        \State $R\gets\emptyset$
+        \ForAll{vertex $v \in V$}
+            \State $v.r \gets \{\mathbf{0}\}^{n}$
+        \EndFor
+        \ForAll{service $v \in S$}
+            \State $v.l \gets i^{th}$ type of service
+        \EndFor
+        \For {each service type $i\in\{1,...,n\}$}
+            \For {each vertex $s$ where $s.l=i$}
+                \State ModifiedDijkstra($G,w,s,t$)
+            \EndFor
+        \EndFor
+        \For {each vertex $v\in V$}
+            \If {$\forall i\in\{1,...,n\},\enspace v.r(i)=1$}
+                \State $R \gets R\cup \{v\}$
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
-Adapting the notations used by Barbieri et al. \cite{barbieri_graph_2023},, for $n$ types of services. For each service type, the locations of each service can be denoted as $f^i_j,j=1...,m$, where $m$ denotes the number of services of service type $i$ in the graph.
+\begin{algorithm}[!h]
+    \caption{ModifiedDijkstra Algorithm}\label{alg:modified_dijsktra}
+    \begin{algorithmic}
+        \For {each vertex $v\in V$}
+            \State $v.d\gets\infty$
+        \EndFor
+        \State $s.d\gets 0$
+        \State $S\gets\emptyset$
+        \State $Q\gets\emptyset$
+        \For {each vertex $v\in V$}
+            \State INSERT($Q,v$)
+        \EndFor
+        \While {$Q\neq\emptyset$}
+            \State $v\gets$EXTRACT-MIN$(Q)$
+            \If {$v.d>t$}
+                \State \textbf{break}
+            \EndIf
+            \State $S\gets S\cup\{v\}$
+            \For {each vertex $u\in Adj[v]$}
+                \If {$u.d>v.d+w(u,v)$}
+                    \State $u.d\gets v.d+w(u,v)$
+                    \State DECREASE-KEY($Q,u,u.d$)
+                \EndIf
+            \EndFor
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+
+Similar approach was used by Barbieri et al. \cite{barbieri_graph_2023}, for $n$ types of services. For each service type, the locations of each service can be denoted as $f^i_j,j=1...,m$, where $m$ denotes the number of services of service type $i$ in the graph.
 
 Subsequently, define $C^i=\bigcup\limits_{j=1}^m C^i_j$ the nodes that can be reached by $f^i$ in less than 15 minutes. More specifically, $C^i_j$ is the set of nodes which can be reached by $f^i_j$ in less than 15 minutes.
 
-$$ C^i=\bigcup\limits_{j=1}^m C^i_j\subseteq V $$
+$$ C^i=\bigcup\limits_{j=1}^m C^i_j\subseteq V$$
 
-If services $$f^i_k$$, $f^i_l$ of the same type $i$ are far enough, it is possible that $C_k\cap C_l=\emptyset$. This represents a gap in the graph where its nodes cannot reach to service type $i$ within 15 minutes.
+If services $f^i_k$, $f^i_l$ of the same type $i$ are far enough, it is possible that $C_k\cap C_l=\emptyset$. This represents a gap in the graph where its nodes cannot reach to service type $i$ within 15 minutes.
 
 Finally, we can define the 15-Minute City as the nodes which can reach to all service types within 15 minutes, namely
 

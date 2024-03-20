@@ -2,14 +2,16 @@ In the previous section \ref{previous_works}, serveral studies have discussed th
 
 With these in mind, the aim of this thesis is to provide a general, adaptable algorithm to identify the 15-Minute City, where a person can travel to all their needs within 15 minutes from their home. Formally, the algorithm has the following properties.
 
-\begin{enumerate}
+\begin{itemize}
     \item Inputs
-    \begin{itemize}
-        \item A graph data structure $G(V,E)$ representing the area of which 15-Minute City is computed, where $V$ is the set of vertices representing road junctions, $E$ is the set of weighted, undirected edges such that $E\subseteq V\times V$ and the weights of the edges are proportional to the length of the roads.
-        \item A list of services of $n$ types, define $f^i$ as the list of vertices in the graph representation the locations of each service type $i=1,...,n$.
-    \end{itemize}
+    \begin{enumerate}
+        \item A graph data structure $G(V,E)$ representing the entire area of which t-Minute City is computed, where $V$ is the set of vertices representing road junctions, $E$ is the set of weighted, undirected edges such that $E\subseteq V\times V$ and the weights of the edges are proportional to the length of the roads, in minutes.
+        \item Given a list of services of $n$ distinct types and their locations, each location is inserted into the graph by adding a vertex to $V$ along an existing edge in $E$. The vertex should be inserted in such a way that the distance from the vertex to the nearest road junction is minimised.
+    \end{enumerate}
     \item Output
     \begin{itemize}
-        \item Returns the area within which a person can travel to any of these services within 15 minutes.
+        \item[o] A set of vertices reachable by at least one location of each service type within $t$ minutes.
     \end{itemize}
-\end{enumerate}
+\end{itemize}
+
+\textbf{Notes:} Barbieri et al. proposed to use a planar graph \cite{barbieri_graph_2023}. However, it is not clear if a planar graph would be able to represent bridges/tunnels etc effectively, as the definition of a planar graph is that it can be drawn on the plane in such a way that its edges intersect only at their endpoints.
