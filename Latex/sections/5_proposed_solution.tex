@@ -1,30 +1,24 @@
-\begin{algorithm}[!h]
-    \caption{15-Minute City Algorithm}\label{alg:15mc}
-    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a list $S$ of service vertices of $n$ types and a time threshold $t$\\
-    \textbf{Output} Set $R$ of vertices reachable by at most $t$ minutes
-    \begin{algorithmic}
-        \State $R\gets\emptyset$
-        \ForAll{vertex $v \in V$}
-            \State $v.r \gets \{\mathbf{0}\}^{n}$
-        \EndFor
-        \ForAll{service $v \in S$}
-            \State $v.l \gets i^{th}$ type of service
-        \EndFor
-        \For {each service type $i\in\{1,...,n\}$}
-            \For {each vertex $s$ where $s.l=i$}
-                \State ModifiedDijkstra($G,w,s,t$)
-            \EndFor
-        \EndFor
-        \For {each vertex $v\in V$}
-            \If {$\forall i\in\{1,...,n\},\enspace v.r(i)=1$}
-                \State $R \gets R\cup \{v\}$
-            \EndIf
-        \EndFor
-    \end{algorithmic}
-\end{algorithm}
+The solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
 
-\begin{algorithm}[!h]
+The modified algorithm will search all vertices which are reachable within $t$ minutes from each source node. The algorithm will be run for each location for each service type.
+
+Adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, which incooperate the Dijkstra's algorithm with a (Minimum) Priority Queue data structure. The data structure maintains a dynamic set $S$ of elements, each set element in $S$ has a key and it supports the following dynamic-set operations.
+
+\begin{itemize}
+    \item INSERT($S; x; k$): inserts element $x$ with key $k$ into set $S$.
+    \item MINIMUM($S$): returns element of $S$ with smallest key.
+    \item EXTRACT-MIN($S$): removes and returns element of $S$ with smallest key.
+    \item DECREASE-KEY($S;x;k$): decreases value of element $x$’s key to $k$. Assumes $k\leq x$’s current key value.
+\end{itemize}
+
+All operations take $O(\log n)$ time in an $n$-element heap with the exception of $\text{MINIMUM}(S)$ being $\Theta(1)$.
+
+We extend the algorithm so that the algotithm will stop once all nodes within $t$ minutes have been visited. As the 15-Minute City concept is primarily used to study cities' characteristics, the input graph of the algorithm is expected to be far larger than each 15 minute area. Therefore, it is necessary to stop the algorithm once all nodes within $t$ minutes have been visited to prevent the algorithm from running indefinitely. The modified algorithm is shown in Algorithm \ref{alg:modified_dijsktra}.
+
+\begin{algorithm}[H]
     \caption{ModifiedDijkstra Algorithm}\label{alg:modified_dijsktra}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
+    \textbf{Output} Set $S$ of vertices reachable by at most $t$ minutes
     \begin{algorithmic}
         \For {each vertex $v\in V$}
             \State $v.d\gets\infty$
@@ -38,46 +32,54 @@
         \While {$Q\neq\emptyset$}
             \State $v\gets$EXTRACT-MIN$(Q)$
             \If {$v.d>t$}
-                \State \textbf{break}
+                \State $Q\gets\emptyset$ \Comment{Break out of While loop}
+            \Else
+                \State $S\gets S\cup\{v\}$
+                % \State $v.r[i] \gets 1 $
+                \For {each vertex $u\in Adj[v]$}
+                    \If {$u.d>v.d+w(u,v)$}
+                        \State $u.d\gets v.d+w(u,v)$
+                        \State DECREASE-KEY($Q,u,u.d$)
+                    \EndIf
+                \EndFor
             \EndIf
-            \State $S\gets S\cup\{v\}$
-            \For {each vertex $u\in Adj[v]$}
-                \If {$u.d>v.d+w(u,v)$}
-                    \State $u.d\gets v.d+w(u,v)$
-                    \State DECREASE-KEY($Q,u,u.d$)
-                \EndIf
-            \EndFor
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
 
+The modified Dijkstra's algorithm shown above only searches for vertices within $t$ minutes from a single source node. For our context of 15-Minute City, we need to run this algorithm for each location of each service type. Searching from each service location will allow us to compute the 15-Minute City more efficiently, as opposed to searching from every vertex in the graph. The full algorithm as the solution of the problem is shown in Algorithm \ref{alg:15mc}.
 
-Similar approach was used by Barbieri et al. \cite{barbieri_graph_2023}, for $n$ types of services. For each service type, the locations of each service can be denoted as $f^i_j,j=1...,m$, where $m$ denotes the number of services of service type $i$ in the graph.
+\begin{algorithm}[H]
+    \caption{15-Minute City Algorithm}\label{alg:15mc}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $n$ types\\
+    \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
+    \begin{algorithmic}
+        \ForAll{vertex $v \in V$}
+            \State $v.r \gets \{\mathbf{0}\}^{n}$
+        \EndFor
+        \ForAll{service $v \in S$}
+            \State $v.l \gets i^{th}$ type of service
+        \EndFor
+        \For {each service type $i\in\{1,...,n\}$}
+            \State $S\gets\emptyset$
+            \For {each vertex $s$ where $s.l=i$}
+                \State $S\gets S\cup\text{ModifiedDijkstra}(G,w,s,t,i)$
+            \EndFor
+            \For {each vertex $v\in S$}
+                \State $v.r[i] \gets 1$
+            \EndFor
+        \EndFor
+        \State $R\gets\emptyset$
+        \For {each vertex $v\in V$}
+            \If {$v.r = \mathbf{1}$}
+                \State $R \gets R\cup \{v\}$
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
-Subsequently, define $C^i=\bigcup\limits_{j=1}^m C^i_j$ the nodes that can be reached by $f^i$ in less than 15 minutes. More specifically, $C^i_j$ is the set of nodes which can be reached by $f^i_j$ in less than 15 minutes.
+% \subsection{Complexity}
 
-$$ C^i=\bigcup\limits_{j=1}^m C^i_j\subseteq V$$
-
-If services $f^i_k$, $f^i_l$ of the same type $i$ are far enough, it is possible that $C_k\cap C_l=\emptyset$. This represents a gap in the graph where its nodes cannot reach to service type $i$ within 15 minutes.
-
-Finally, we can define the 15-Minute City as the nodes which can reach to all service types within 15 minutes, namely
-
-$$ C=\bigcap\limits_{i=1}^n\bigcup\limits_{j=1}^m C^i_j=\bigcap\limits_{i=1}^n C^i\subseteq V $$
-
-\subsection{Rewrite notations}
-
-Given $n$ types of services, define $F_v\in\{0,1\}^n$ for node $v$ as
-
-$$ F_v(i) = \begin{cases}1&\text{if node }v\text{ can reach to service }i\text{ in 15 minutes}\\0&\text{otherwise}\end{cases} $$
-
-The output of the algorithm is a set $X\subseteq V$ of nodes where
-
-$$ \forall v\in X,\enspace F_v=\mathbf{1} $$
-
-\subsection{Search for nodes within 15 minutes}
-
-As we have discussed in \ref{dijkstra}, Dijkstra's algorithm can be used to find the shortest route between 2 locations. Therefore, this can be considered as a motivation/inspiration as part of the solution in finding 15-Minute City.
-
-\subsection{Modified Algorithm}
-
-\subsection{Complexity}
+% Can extend the graph to include slopes
+% Assign v.r[i] in Dijkstra instead?
+% Set R operations
