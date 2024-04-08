@@ -1,6 +1,6 @@
-The solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
+\subsection{Dijkstra's Algorithm}
 
-The modified algorithm will search all vertices which are reachable within $t$ minutes from each source node. The algorithm will be run for each location for each service type.
+The first solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
 
 Adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, which incooperate the Dijkstra's algorithm with a (Minimum) Priority Queue data structure. The data structure maintains a dynamic set $S$ of elements, each set element in $S$ has a key and it supports the following dynamic-set operations.
 
@@ -18,13 +18,13 @@ We extend the algorithm so that the algotithm will stop once all nodes within $t
 \begin{algorithm}[H]
     \caption{ModifiedDijkstra Algorithm}\label{alg:modified_dijsktra}
     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
-    \textbf{Output} Set $S$ of vertices reachable by at most $t$ minutes
+    \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$ % Set $S$ of vertices reachable by at most $t$ minutes
     \begin{algorithmic}
         \For {each vertex $v\in V$}
             \State $v.d\gets\infty$
         \EndFor
         \State $s.d\gets 0$
-        \State $S\gets\emptyset$
+        % \State $S\gets\emptyset$
         \State $Q\gets\emptyset$
         \For {each vertex $v\in V$}
             \State INSERT($Q,v$)
@@ -34,8 +34,8 @@ We extend the algorithm so that the algotithm will stop once all nodes within $t
             \If {$v.d>t$}
                 \State $Q\gets\emptyset$ \Comment{Break out of While loop}
             \Else
-                \State $S\gets S\cup\{v\}$
-                % \State $v.r[i] \gets 1 $
+                % \State $S\gets S\cup\{v\}$
+                \State $v.r[i] \gets 1 $
                 \For {each vertex $u\in Adj[v]$}
                     \If {$u.d>v.d+w(u,v)$}
                         \State $u.d\gets v.d+w(u,v)$
@@ -47,7 +47,7 @@ We extend the algorithm so that the algotithm will stop once all nodes within $t
     \end{algorithmic}
 \end{algorithm}
 
-The modified Dijkstra's algorithm shown above only searches for vertices within $t$ minutes from a single source node. For our context of 15-Minute City, we need to run this algorithm for each location of each service type. Searching from each service location will allow us to compute the 15-Minute City more efficiently, as opposed to searching from every vertex in the graph. The full algorithm as the solution of the problem is shown in Algorithm \ref{alg:15mc}.
+The modified Dijkstra's algorithm shown above only searches for vertices within $t$ minutes from a single source node. For our context of the 15-Minute City, this needs to run for each location of each service type. The full algorithm as the solution of the problem is shown in Algorithm \ref{alg:15mc}.
 
 \begin{algorithm}[H]
     \caption{15-Minute City Algorithm}\label{alg:15mc}
@@ -56,18 +56,20 @@ The modified Dijkstra's algorithm shown above only searches for vertices within 
     \begin{algorithmic}
         \ForAll{vertex $v \in V$}
             \State $v.r \gets \{\mathbf{0}\}^{n}$
+            \State $v.l \gets 0$
         \EndFor
         \ForAll{service $v \in S$}
             \State $v.l \gets i^{th}$ type of service
         \EndFor
         \For {each service type $i\in\{1,...,n\}$}
-            \State $S\gets\emptyset$
+            % \State $S\gets\emptyset$
             \For {each vertex $s$ where $s.l=i$}
-                \State $S\gets S\cup\text{ModifiedDijkstra}(G,w,s,t,i)$
+                \State $\text{ModifiedDijkstra}(G,w,s,t,i)$
+                % \State $S\gets S\cup\text{ModifiedDijkstra}(G,w,s,t,i)$
             \EndFor
-            \For {each vertex $v\in S$}
-                \State $v.r[i] \gets 1$
-            \EndFor
+            % \For {each vertex $v\in S$}
+            %     \State $v.r[i] \gets 1$
+            % \EndFor
         \EndFor
         \State $R\gets\emptyset$
         \For {each vertex $v\in V$}
@@ -78,8 +80,10 @@ The modified Dijkstra's algorithm shown above only searches for vertices within 
     \end{algorithmic}
 \end{algorithm}
 
-% \subsection{Complexity}
+\subsubsection{Analysis}
 
-% Can extend the graph to include slopes
-% Assign v.r[i] in Dijkstra instead?
-% Set R operations
+\subsection{Dijkstra's Algorithm Revisit}
+
+The second version of the algorithm proposed 
+
+\subsection{All Pairs Shortest Path}
