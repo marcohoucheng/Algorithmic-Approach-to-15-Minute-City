@@ -16,7 +16,7 @@ All operations take $O(\log n)$ time in an $n$-element heap with the exception o
 We extend the algorithm so that the algotithm will stop once all nodes within $t$ minutes have been visited. As the 15-Minute City concept is primarily used to study cities' characteristics, the input graph of the algorithm is expected to be far larger than each 15 minute area. Therefore, it is necessary to stop the algorithm once all nodes within $t$ minutes have been visited to prevent the algorithm from running indefinitely. The modified algorithm is shown in Algorithm \ref{alg:modified_dijsktra}.
 
 \begin{algorithm}[H]
-    \caption{ModifiedDijkstra Algorithm}\label{alg:modified_dijsktra}
+    \caption{ModifiedDijkstra Algorithm} \label{alg:modified_dijsktra}
     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
     \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$ % Set $S$ of vertices reachable by at most $t$ minutes
     \begin{algorithmic}
@@ -82,8 +82,24 @@ The modified Dijkstra's algorithm shown above only searches for vertices within 
 
 \subsubsection{Analysis}
 
+The time complexity of the modified Dijkstra's algorithm depends on the following:
+
+\begin{itemize}
+    \item Initialisation: $O(V)$
+    \item $\text{INSERT}$: $|V|\cdot O(|\text{INSERT}|)=O(|V|\cdot|\text{INSERT}|)$
+    \item $\text{EXTRACT-MIN}$: $|V|\cdot O(|\text{EXTRACT-MIN}|)=O(|V|\cdot|\text{EXTRACT-MIN}|)$
+    \item $\text{DECREASE-KEY}$: $|E|\cdot O(|\text{DECREASE-KEY}|)=O(|E|\cdot|\text{DECREASE-KEY}|)$
+\end{itemize}
+
+The time complexity of the algorithm is also affected by the data structure used to implement the priority queue. A binary heap is a common choice for implementing a priority queue, which has a time complexity of $O(\log V)$ for $\text{INSERT}$, $\text{EXTRACT-MIN}$ and $\text{DECREASE-KEY}$ operations. However, if a Fibonacci heap is used instead, the time complexity of the operations is reduced to $O(1)$, $O(\log V)$ and $O(1)$ respectively.
+
+As the latter two operations in the algorithm dominates the former two operations, the time complexity of algorithm \ref{alg:modified_dijsktra} is $O((V+E)\log V)$ if a binary heap is implemented. This can be reduced to $O(V\log V+E)$ if a Fibonacci heap is considered instead.
+
+As for the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $m$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(n\cdot m\cdot(V\log V+E))$ if a binary heap is implemented and $O(n\cdot m\cdot(V\log V+E))$ if a Fibonacci heap is implemented. 
+
 \subsection{Dijkstra's Algorithm Revisit}
 
 The second version of the algorithm proposed aims to improve on the complexity of the first version, the algorithm searches from multiple source nodes simultaneously. Therefore, this algorithm will allow us to find all vertices that can reach to a location of a specific service type within $t$ minutes. The algorithm is shown in Algorithm %\ref{alg:15mc_revisit}.
 
 \subsection{All Pairs Shortest Path}
+
