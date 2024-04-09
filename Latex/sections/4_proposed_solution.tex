@@ -95,7 +95,29 @@ The time complexity of the algorithm is also affected by the data structure used
 
 As the latter two operations in the algorithm dominates the former two operations, the time complexity of algorithm \ref{alg:modified_dijsktra} is $O((V+E)\log V)$ if a binary heap is implemented. This can be reduced to $O(V\log V+E)$ if a Fibonacci heap is considered instead.
 
-As for the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $m$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(n\cdot m\cdot(V\log V+E))$ if a binary heap is implemented and $O(n\cdot m\cdot(V\log V+E))$ if a Fibonacci heap is implemented. 
+For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $m$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(n\cdot m\cdot(V\log V+E))$ if a binary heap is implemented and $O(n\cdot m\cdot(V\log V+E))$ if a Fibonacci heap is implemented. 
+
+In both cases, the time complexity consider the size of the entire graph, which could be arbitrarily large when a city or a large area is studied. Due to the fact that the modified dijsktra's algorithm stops once all nodes within weight $t$ are searched, it is important to note that the actual complexity of the algorithm is much smaller. For example, consider a city with only square grids and each edge has a weight of 1 (see image \ref{fig:grid_city}) The algorithm will effectively only search a total of 100 edges and 141 nodes.
+
+\begin{figure}[h]
+    \caption{Example of grid city}
+    \centering
+    \includegraphics[width=0.5\textwidth]{grid_city.png}
+    \label{fig:grid_city}
+\end{figure}
+
+However, if the graph of interest has the following characteristics: starting from the source node $s$, each node expands the graph with 4 edges of weight 1. (An illustration of the graph with 2 levels are shown in figure \ref{fig:tree_city}) In this arrangment, given a parameter level $l$, the number of nodes and edges can be calculated as follows:
+
+$$|\text{Edges}|=\sum^{15}_{l=0}4^{l-1},\enspace|\text{Vertices}|=\sum^{15}_{l=1}4^{l-1}$$
+
+Consider the case where a level in this calculation represents a minute of travelling time, the modified dijsktra's algorithm will have a time complexity with $|E|=357913941$ and $|V|=1431655765$.
+
+\begin{figure}[h]
+    \caption{Example of a tree city at 2 levels}
+    \centering
+    \includegraphics[width=0.5\textwidth]{tree_city.png}
+    \label{fig:tree_city}
+\end{figure}
 
 \subsection{Dijkstra's Algorithm Revisit}
 
