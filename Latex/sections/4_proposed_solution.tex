@@ -207,7 +207,7 @@ In this implementation, the time complexity remain the same as Dijkstra's algori
 
 $$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
-\subsection{Inspirations from Johnson's algorithm}
+\subsection{Inspiration from Johnson's algorithm}
 
 Johnson's algorithm is an all-pairs shortest path algorithm to find shortest paths between every pair of nodes in a graph. It uses both Dijkstra and Bellman-Ford as subroutines and performs better than Floyd-Warshall algorithm in sparse graphs. For the goal of the 15-Minute City algorithm, the set of service vertices can be far smaller than the entire graph in size. Thus, all-pairs shortest path algorithms are not optimal solutions to the problem. However, Johnson's algorithm's approach in adjusting the weights to make all edges non-negative can be applied to the 15-Minute City problem. The algorithm works by adding a new vertex $s$ to the graph and adding edges from the new vertex to all vertices of the graph, before applying Bellman-Ford algorithm.
 
