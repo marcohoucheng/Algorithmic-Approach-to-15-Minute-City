@@ -2,6 +2,7 @@
 \usepackage[a4paper,top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,marginparwidth=1.75cm]{geometry}
 \usepackage{graphicx} % Required for inserting images
 \graphicspath{{images/}}
+\usepackage{subcaption}
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{dirtytalk} % The say command is equivalent to `'
@@ -9,6 +10,9 @@
 \usepackage{import}
 \usepackage{makecell}
 \usepackage{amssymb} % Add this line to import the amssymb package
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \usepackage{algorithm, algpseudocode, float}
 
@@ -37,12 +41,14 @@
 \tableofcontents
 \listoffigures
 \listoftables
-
+\listofalgorithms
 \newpage
 
 \section{Introduction}
 
 \import{sections/}{1_intro}
+
+\newpage
 
 \section{Previous Work}
 
