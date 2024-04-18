@@ -1,4 +1,4 @@
-\subsection{Dijkstra's Algorithm}
+\section{Dijkstra's Algorithm}
 
 The first solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
 
@@ -169,7 +169,7 @@ $$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\r
 
 For the  space complexity, it is important to note that the proposed modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(n\cdot m\cdot V)$. Hence the algorithm proposed is not suitable for large graphs for space complexity.
 
-\subsection{Uniform Cost Search}
+\section{Uniform Cost Search}
 
 The problem described above can be solved by adapting a so-called "Uniform Cost Search" algorithm (also known as "Dijkstra for large graphs"). The algorithm is an extension of Best-first search and it is similar to Dijkstra's algorithm. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:uniform_cost_search}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
 
@@ -201,13 +201,13 @@ The problem described above can be solved by adapting a so-called "Uniform Cost 
     \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Analysis}
+\subsection{Analysis}
 
 In this implementation, the time complexity remain the same as Dijkstra's algorithm in the worst case scenario. However, the algorithm is more efficient in practice as it only inserts vertices that are reachable within the time threshold $t$ into the priority queue. Here, the space complexity becomes
 
 $$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
-\subsection{Inspiration from Johnson's algorithm}
+\section{Inspiration from Johnson's algorithm}
 
 Johnson's algorithm is an all-pairs shortest path algorithm to find shortest paths between every pair of nodes in a graph. It uses both Dijkstra and Bellman-Ford as subroutines and performs better than Floyd-Warshall algorithm in sparse graphs. For the goal of the 15-Minute City algorithm, the set of service vertices can be far smaller than the entire graph in size. Thus, all-pairs shortest path algorithms are not optimal solutions to the problem. However, Johnson's algorithm's approach in adjusting the weights to make all edges non-negative can be applied to the 15-Minute City problem. The algorithm works by adding a new vertex $s$ to the graph and adding edges from the new vertex to all vertices of the graph, before applying Bellman-Ford algorithm.
 
@@ -240,7 +240,7 @@ This approach can be applied to the 15-Minute City problem by adding a new verte
     \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Analysis}
+\subsection{Analysis}
 
 For each service type, the proposed approach increases the number of vertices by 1 and the number of edges by the number of service vertices of the same type. Denote $m_w$ as the maximum number of service vertices of the same type, then for each service type, Modified\_Uniform\_Cost\_Search algorithm \ref{alg:uniform_cost_search} is run, where the algorithm starts from the newly inserted vertex $s$, it visits at most $m_w$ vertices and continues its search as before. The time complexity of the Modified\_Uniform\_Cost\_Search algorith is then:
 

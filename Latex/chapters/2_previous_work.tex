@@ -1,4 +1,4 @@
-In this section, we will discuss a number of previous works of 15-Minute City. As this topic have been studied in various research fields in literature, we will group the works according to their methodologies and approaches, which include graph representation, grid tessellation, flow data, Walk Score, and other works. Table \ref{previous_works} provides a summary of these studies mentioned in this section excluding other works, specifically the methodologies discuessed and used in determining and finding the so-called "15-Minute City". Other works will cover studies about the general concept of the "15-Minute City". The following subsections are the detailed descriptions of each study and methodology used.
+In this section, we will discuss a number of previous works of 15-Minute City. As this topic have been studied in various research fields in literature, we will group the works according to their methodologies and approaches, which include graph representation, grid tessellation, flow data, Walk Score, and other works. Table \ref{previous_works} provides a summary of these studies mentioned in this section excluding other works, specifically the methodologies discuessed and used in determining and finding the so-called "15-Minute City". Other works will cover studies about the general concept of the "15-Minute City". The following sections are the detailed descriptions of each study and methodology used.
 
 \begin{table}[htbp]
     \begin{center}
@@ -21,11 +21,11 @@ In this section, we will discuss a number of previous works of 15-Minute City. A
     \end{center}
 \end{table}
 
-\subsection{Graph Representation}
+\section{Graph Representation}
 
-\subsubsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris}
+\subsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris}
 
-% \subsubsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris \texorpdfstring{\cite{barbieri_graph_2023}}{}} \label{barbieri_graph_2023}
+% \subsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris \texorpdfstring{\cite{barbieri_graph_2023}}{}} \label{barbieri_graph_2023}
 
 Barbieri et al. defined the general $t$-minute city (hereafter $t$-MC) on an urban graph with respect to a given set of services \cite{barbieri_graph_2023}. The urban graph is represented by a planer graph $G(V,E)$ (when a connected graph can be drawn without any edges crossing).
 
@@ -57,7 +57,7 @@ For the case study, the authors used a "shortest path search algorithm” for gr
 
 \textit{\textbf{Note}: This paper transform map data into a planar graph, the algorithm starts from services rather than houses which reduces computational complexity. The authors referenced an article about Dijkstra algorithm for graph search but their implementation was not mentioned.}
 
-\subsubsection{Exploring the 15-minute neighbourhoods}
+\subsection{Exploring the 15-minute neighbourhoods}
 
 According to the authors (Caselli et al.), \say{in the proposed study, the 15-Minute City theme is addressed with an analytical model designed and developed using GIS to assess existing conditions of accessibility to neighbourhood services for all the resident social groups.} \cite{caselli_exploring_2022}
 
@@ -73,7 +73,7 @@ The authors then compare this area with its population distribution to study the
 
 \textit{\textbf{Notes:} The authors did not define the neighbour cores, only by saying \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery stores, bars, drugstores, and banks.} However, using such nodes to calculate for 15-Minute City contributes to faster running time. The actual 15-Minute City search approach was not mentioned.}
 
-\subsubsection{The inclusive 15-Minute City: Walkability analysis with sidewalk networks}
+\subsection{The inclusive 15-Minute City: Walkability analysis with sidewalk networks}
 
 The paper proposed a framework for assessing multi-factor walkability on a sidewalk network model \cite{rhoads_inclusive_2023}. The sidewalk network model is defined as a graph where the nodes are intersections or crosswalks, the edges have 3 types: sidewalks, crosswalks, and pedestrian-only paths and 4 attributes: length, width, slope, and pedestrian hazard. The pedestrian-only paths includes pedestrianised streets, living streets, and paths through parks and plazas. Pedestrian hazard is a metric to describe how dangerous each sidewalk segment by using a fine-grained map of estimated pedestrian safety in Barcelona \cite{bustos_explainable_2021} and by exploiting Deep Learning tools. The resulting network is denser than the road network (approximately 4 to 1 in both nodes and edges). Each node of the graph has also been assigned a population according to census data.
 
@@ -92,9 +92,9 @@ The authors then studied the impact of population size of the largest and second
 
 \textit{\textbf{Notes:} This model takes hazard as a factor. The percolation analysis is a main focus of the study. The Supplementary notes also included the modification of Dijkstra algorithm.}
 
-\subsection{Grid Tessellation}
+\section{Grid Tessellation}
 
-\subsubsection{Urban accessibility in a 15-Minute City a measure in the city of Naples, Italy}
+\subsection{Urban accessibility in a 15-Minute City a measure in the city of Naples, Italy}
 
 The authors (Gaglione et al.) in this paper proposed a 4 steps methodology through a GIS environment to define the areas accessible in 15 minutes \cite{gaglione_urban_2022}.
 
@@ -115,7 +115,7 @@ The authors then explored the effect of choosing different grid size, shapes etc
 
 \textit{\textbf{Notes:} The authors did not specify walking speeds or any algorithms used in calculating travel times.}
 
-\subsubsection{Are Italian cities already 15-minute?}
+\subsection{Are Italian cities already 15-minute?}
 
 The authors (Olivari et al.) of this paper proposed a data-driven approach solution by defining the NExt proXimity Index (NEXI), which “exploits the data to answer the question: \say{Which parts of your city or town already follow the 15-minute model?} \cite{olivari_are_2023}
 
@@ -141,7 +141,7 @@ $$\text{Discomfort} = (100-\text{Global})\times\text{Population}$$
 
 \textit{\textbf{Notes:} This paper takes the population distribution into account, only considering walking (but can be changed easily by varying the speed parameter). It does not use graph representation and there are no mentions of graph search algorithm. Though the authors mentioned that the algorithm could be sped up by using  "parallelisable algorithm”.}
 
-\subsubsection{Travel-time in a grid: modelling movement dynamics in the "minute city"}
+\subsection{Travel-time in a grid: modelling movement dynamics in the ``minute city"}
 
 The authors claimed to “provide initial insights and recommendations for developing more robust 15-Minute City models” and emphasised “the importance of technical modelling steps in determining the mapping outputs which support the assessments of 15-minute cities” \cite{Pezzica_Altafini_Mara_Chioni_2024}. In the paper, they experimented on evaluating grid-based methods and identified four noteworthy variables: 
 
@@ -156,9 +156,9 @@ The authors claimed to “provide initial insights and recommendations for devel
 
 \textit{\textbf{Note:} The authors concluded the article with the paragraph above, which highlights the importance of having a standardised method in calculating 15-Minute City. The results of the thesis can be used to be a harmonised solution to this.}
 
-\subsection{Flow Data}
+\section{Flow Data}
 
-\subsubsection{Towards a 15-minute city: A network-based evaluation framework.} 
+\subsection{Towards a 15-minute city: A network-based evaluation framework.} 
 
 In the context of 15-Minute City, it is suggested that the allocation of facilities should account for how people access and use local service and amenities rather than merely considering population size \cite{chai_new_2020}.
 
@@ -174,13 +174,13 @@ The network-based evaluation framework contains 3 parts:
 
 The authors then applied the framework model to a case study in Nanjing, China.
 
-\subsubsection{Measuring polycentricity via network flows, spatial interaction and percolation}
+\subsection{Measuring polycentricity via network flows, spatial interaction and percolation}
 
 This paper studied polycentricity based on inflow and outflow trip data and considered 3 network-based centricity metrics \cite{sarkar_measuring_2020}. In particular, accessibility-based centricity index computes the total number of jobs available and the number of works available within a time threshold from a location. The time threshold was set to 30 in the study to align with the polycentricity-inspired masterplan proposed by The Greater Sydney Commission (GSC) in 2018 which applies to the Sydney-GMR (Sydney Greater Metropolitan Region), noting that \say{access to jobs, goods and services is provided to the community in three largely self-contained regions.}
 
-\subsection{Walk Score}
+\section{Walk Score}
 
-\subsubsection{Walk Score}
+\subsection{Walk Score}
 
 Walk Score is a measure of how walkable an address is based on the distance and availability of nearby amenities, such as grocery stores, restaurants, schools, parks, etc. The higher the Walk Score, the more walkable the location is.
 
@@ -207,7 +207,7 @@ Walk Score ranges from 0 to 100, with the following descriptions:
 
 \textit{\textbf{Notes:} The Walk Score algorithm is not open source. However, it considers walking distance between 5 to 30 minutes. Its calculation has been validated \cite{carr_validation_2011}}
 
-\subsubsection{The 15-Minute Walkable Neighbourhoods: Measurement, Social Inequalities and Implications for Building Healthy Communities in Urban China}
+\subsection{The 15-Minute Walkable Neighbourhoods: Measurement, Social Inequalities and Implications for Building Healthy Communities in Urban China}
 
 In this paper, the authors (Weng et al.) noted some of the limitations of the Walk Score calculation \cite{weng_15-minute_2019}, such as
 
@@ -221,25 +221,25 @@ They proposed a modified method to measure 15-min walkable neighbourhoods based 
 
 \textit{\textbf{Notes:} This paper did not consider any algorithm and modification is heavily based on a questionnaire.}
 
-\subsection{Other works}
+\section{Other works}
 
-\subsubsection{A Grammar-Based Optimisation Approach for Designing Urban Fabrics and Locating Amenities for 15-Minute Cities}
+\subsection{A Grammar-Based Optimisation Approach for Designing Urban Fabrics and Locating Amenities for 15-Minute Cities}
 
 This paper uses a geometric grammar based approach to explore computation to support decision-making concerning the layout of urban fabrics and the location of amenities in a neighbourhood \cite{lima_grammar-based_2022}. The authors used an inductive method for qualitative content analysis. However, the authors noted that this solution “does not address irregular or non-orthogonal urban block patterns, and the influence of nearby amenities located outside the studied fabric was not considered.”
 
-\subsubsection{The Quest for Proximity: A Systematic Review of Computational Approaches towards 15-Minute Cities}
+\subsection{The Quest for Proximity: A Systematic Review of Computational Approaches towards 15-Minute Cities}
 
 The authors developed a comprehensive overview of the use of computational tools to support the analysis and design of 15-Minute Cities using a systematic literature review \cite{lima_quest_2023}. They noted that the topic of 15-minute city has growth exponentially in popularity and especially in the field of urban design. They concluded that computational approaches to 15-minute city design presents significant challenges such as “Data availability and quality”, “Computational cost” and “Adaptability”.
 
-\subsubsection{The 15-minute city: Urban planning and design efforts toward creating sustainable neighbourhoods}
+\subsection{The 15-minute city: Urban planning and design efforts toward creating sustainable neighbourhoods}
 
 The authors collected 103 documents, dealing with underlying principles, sustainability advantages, and critics of the 15-minute city concept \cite{khavarian-garmsir_15-minute_2023}. They defined 7 dimensions constitute the 15-minute city: (1) proximity, (2) density, (3) diversity, (4) digitalisation, (5) human scale
 urban design, (6) flexibility, (7) connectivity. The authors summarised the sustainability contributions in social, economical and environmental aspects in the society by 15-Minute City and also the barrier of implementations.
 
-\subsubsection{The Theoretical, Practical, and Technological Foundations of the 15-Minute City Model: Proximity and Its Environmental, Social and Economic Benefits for Sustainability}
+\subsection{The Theoretical, Practical, and Technological Foundations of the 15-Minute City Model: Proximity and Its Environmental, Social and Economic Benefits for Sustainability}
 
 15-Minute City has four main cornerstones (proximity, diversity, density, and digitisation). The authors in this paper explored the proximity dimensions of the 15-Minute City and how it could influence mixed land use to yield environmental, social, and economic benefits \cite{allam_theoretical_2022}.
 
-\subsubsection{Urban Transition and the Return of Neighbourhood Planning. Questioning the Proximity Syndrome and the 15-Minute City}
+\subsection{Urban Transition and the Return of Neighbourhood Planning. Questioning the Proximity Syndrome and the 15-Minute City}
 
 The authors of this paper developed an evidence-based approach to a deeper analysis of policy design and implementation of the 15 minute city \cite{marchigiani_urban_2022}. They concluded that the implementation and effectiveness of the 15 minute city depend on the concrete and contextual conformation of each city. The authors ended the paper stating that city development “needs some design framework and structure capable of addressing transformations, and their space and time location and sequences” on top of the “15 minute device” and that “it needs a syntax for an urban planning course of action that is incremental and adaptive but not limited to the contingent, blurred, and agnostic appeal of a catchy label.”

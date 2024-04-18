@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[oneside]{book}
 \usepackage[a4paper,top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,marginparwidth=1.75cm]{geometry}
 \usepackage{graphicx} % Required for inserting images
 \graphicspath{{images/}}
@@ -19,10 +19,26 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1em}
 
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{1}
 
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{naturalnames}{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{lipsum}
+
+%   Reduce the margin of the summary:
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist 
+
+%   Generate the environment for the abstract:
+\newcommand\summaryname{Abstract}
+\newenvironment{Abstract}%
+    {\small\begin{center}%
+    \bfseries{\summaryname} \end{center}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Algorithmic Approach to 15 Minute City}
 \author{Marco Lam}
@@ -32,9 +48,12 @@
 
 \maketitle
 
-\begin{abstract}
-    Your abstract.
-\end{abstract}
+% Insert abstract
+\begin{Abstract}
+    \begin{changemargin}{1cm}{1cm}
+    \lipsum[10]
+    \end{changemargin}
+\end{Abstract}
 
 \newpage
 
@@ -44,27 +63,27 @@
 \listofalgorithms
 \newpage
 
-\section{Introduction}
+\chapter{Introduction}
 
-\import{sections/}{1_intro}
-
-\newpage
-
-\section{Previous Work}
-
-\import{sections/}{2_previous_work}
+\import{chapters/}{1_intro}
 
 \newpage
 
-\section{Problem Statement}
+\chapter{Previous Work}
 
-\import{sections/}{3_problem_statement}
+\import{chapters/}{2_previous_work}
 
 \newpage
 
-\section{Proposed Solutions}
+\chapter{Problem Statement}
 
-\import{sections/}{4_proposed_solution}
+\import{chapters/}{3_problem_statement}
+
+\newpage
+
+\chapter{Proposed Solutions}
+
+\import{chapters/}{4_proposed_solution}
 
 \newpage
 
