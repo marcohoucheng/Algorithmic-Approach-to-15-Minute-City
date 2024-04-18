@@ -8,12 +8,14 @@ Adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, w
     \item INSERT($S; x; k$): inserts element $x$ with key $k$ into set $S$.
     \item MINIMUM($S$): returns element of $S$ with smallest key.
     \item EXTRACT-MIN($S$): removes and returns element of $S$ with smallest key.
-    \item DECREASE-KEY($S;x;k$): decreases value of element $x$’s key to $k$. Assumes $k\leq x$’s current key value.
+    \item DECREASE-KEY($S;x;k$): decreases value of element $x$'s key to $k$. Assumes $k\leq x$'s current key value.
 \end{itemize}
 
 All operations take $O(\log n)$ time in an $n$-element heap with the exception of $\text{MINIMUM}(S)$ being $\Theta(1)$.
 
-We extend the algorithm so that the algotithm will stop once all nodes within $t$ minutes have been visited. As the 15-Minute City concept is primarily used to study cities' characteristics, the input graph of the algorithm is expected to be far larger than each 15 minute area. Therefore, it is necessary to stop the algorithm once all nodes within $t$ minutes have been visited to prevent the algorithm from running indefinitely. The modified algorithm is shown in Algorithm \ref{alg:modified_dijsktra}.
+We extend the algorithm so that the algotithm will stop once all nodes within $t$ minutes have been visited. For each node considered in the algorithm, a new label $v.d$ is created where $v.d \in \mathbb{R}_{\geq 0}$ representing the distance from the current source node of the algorithm, initialised to $\infty$.
+
+As the 15-Minute City concept is primarily used to study cities' characteristics, the input graph of the algorithm is expected to be far larger than each 15 minute area. Therefore, it is necessary to stop the algorithm once all nodes within $t$ minutes have been visited to prevent the algorithm from running indefinitely. The modified algorithm is shown in Algorithm \ref{alg:modified_dijsktra}.
 
 \begin{algorithm}[H]
     \caption{Modified Dijkstra Algorithm} \label{alg:modified_dijsktra}
@@ -124,15 +126,6 @@ $$
     %|\text{Vertices}|&=\begin{cases}0&t=0\\1+2t\cdot(t+1)&\text{otherwise}\end{cases}
 \end{aligned}
 $$
-
-% $$|\text{Edges}|=4\cdot\sum^{t}_{l=1}(2t-1),\enspace|\text{Vertices}|=1+\sum^{t}_{l=1}4l$$
-
-% \begin{figure}[h]
-%     \caption{Example of grid city}
-%     \centering
-%     \includegraphics[width=0.5\textwidth]{grid_city.png}
-%     \label{fig:grid_city}
-% \end{figure}
 
 However, if the graph of interest has the following characteristics: starting from the source node $s$, every node has $d$ successors with $d$ edges of weight 1. (An illustration of the graph with 2 levels and $d = 4$ are shown in figure \ref{fig:tree_city}) In this arrangment, given a time threshold $t$ and $d$ the number of nodes branching out from each parent node, the number of nodes and edges need to be visited are as follows:
 
@@ -257,3 +250,10 @@ However, the time and space complexity of the 15-Minute City algorithm are now:
 $$O\left(n\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)\text{ and }O\left(n\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
 respectively, which are smaller by an order of $m_w$ compared to the previous algorithm.
+
+% To do:
+% - Multiple services in the same node
+% - Complexity
+% -- Change reference from n and m
+% -- Small graph size
+% -- Only use degree as parameter

@@ -30,7 +30,7 @@
 
 %   Reduce the margin of the summary:
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
-\let\endchangemargin=\endlist 
+\let\endchangemargin=\endlist
 
 %   Generate the environment for the abstract:
 \newcommand\summaryname{Abstract}
@@ -48,12 +48,7 @@
 
 \maketitle
 
-% Insert abstract
-\begin{Abstract}
-    \begin{changemargin}{1cm}{1cm}
-    \lipsum[10]
-    \end{changemargin}
-\end{Abstract}
+\import{chapters/}{0_abstract}
 
 \newpage
 
@@ -69,7 +64,7 @@
 
 \newpage
 
-\chapter{Previous Work}
+\chapter{Previous Work} \label{previous_works}
 
 \import{chapters/}{2_previous_work}
 

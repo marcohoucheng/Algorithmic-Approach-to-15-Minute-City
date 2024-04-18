@@ -2,25 +2,34 @@ In the previous section \ref{previous_works}, serveral studies have discussed th
 
 With these in mind, the aim of this thesis is to provide a general, adaptable algorithm to identify the 15-Minute City, where a person can travel to all their needs within 15 minutes from their home. Formally, the algorithm has the following properties.
 
+% n, m graph size
+% s source
+% u, v, w notation of vertices
+% t time
+% l vertex of services in a node
+% r reachable within t minutes
+% i i^th service type
+% p number of service types
+% q_i number of locations of service type i
+
 \begin{itemize}
     \item Inputs
     \begin{enumerate}
-        \item A graph data structure $G(V,E)$ representing the entire area of which $t$-Minute City is computed. $V$ is the set of vertices representing locations of the area, this could be road junction, amenity of interest, etc. $E$ is the set of weighted, undirected edges such that $E\subseteq V\times V$ and the weights of the edges are proportional to the length of the roads, in minutes.
+        \item A graph data structure $G(V,E)$ representing the entire area of which $t$-Minute City is computed. $V$ is the set of vertices representing locations of the area, this could be road junction, amenity of interest, etc. $E$ is the set of weighted, undirected edges such that $E\subseteq V\times V$ and the weights $w:E\rightarrow\mathbb{R}_{+}$ of the edges are proportional to the length of the roads, in minutes.
         \begin{itemize}
-            \item More specifically, given a list of services of $n$ distinct types and their locations, each location can be inserted into the graph by adding a vertex to $V$ along an existing edge in $E$, in such a way that the distance from the vertex to the nearest road junction is minimised. For every vertex $v\in V$, $v$ has the following labels:
-
-            \begin{itemize}
-                \item $v.l\in\{0,1,...,n\}$ representing the type of service of the location, where $0$ represents a non-service location, i.e. intersections of roads.
-                \item $v.d \in \mathbb{R}_{\geq 0}$ representing the distance from the current source node of the algorithm, initialised to $\infty$.
-                \item $v.r\in\{0,1\}^{n}$. After excuting the algorithm, we have $v.r[i]=1$ if $v$ is reachable by service $i$ within $t$ minutes.
-            \end{itemize}            
+            \item More specifically, given a list of services of $p$ distinct types and their locations, each location can be inserted into the graph by adding a vertex to $V$ along an existing edge in $E$, in such a way that the distance from the vertex to the nearest road junction is minimised.
         \end{itemize}
+        For every vertex $v\in V$, $v$ has the label $v.l\in\{0,1\}^p$, where $v.l[i]$ represents the availability of service type $i$ of the location. For example, $v.l\in\{0\}^n$ can be intrepreted as a road junction.
         \item A time threshold $t$ in minutes.
     \end{enumerate}
     \item Output
     \begin{itemize}
-        \item[o] A set of vertices $R$ representing locations which can reach at least one location of each service type within $t$ minutes, such that $$\forall v\in R, v.l = \mathbf{1}$$
+        \item[] A set of vertices $R\subseteq V$ of vertices which can reach at least one location of each service type within $t$ minutes, such that        $$\forall v\in R:\forall i\in\{1,...p\},\exists w\in V, w.l[i]=1:d(v,w)\leq t$$ where $d(v,w)$ is the shortest path distance between $v$ and $w$. Moreover, denote $v.r[i]\in\{0,1\}^p$ as a binary indicator of whether $v$ can reach a location of service type $i$ within $t$ minutes, such that $$v.r[i]=1\iff\exists w\in V, w.l[i]=1:d(v,w)\leq t$$ then, we have $$\forall v\in R, v.r = \mathbf{1}$$
     \end{itemize}
 \end{itemize}
 
-Taking inspriation from the approach used by Barbieri et al. \cite{barbieri_graph_2023}, the modified algorithm will use a modified graph search algorithm to find the 15-Minute City with the service locations of each type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph. The algorithm will be discussed in the next section.
+Taking inspriation from the approach used by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}), the modified algorithm will use a modified graph search algorithm to find the 15-Minute City with the service locations of each type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph.
+
+Furthermore, a number of other literature works studied in Chapter \ref{previous_works} have mentioned the use of a graph search algorithm to find the 15-Minute City or the travelling time from the source location of interest. Notably, Caselli et al. (Section \ref{caselli_exploring_2022}, \cite{caselli_exploring_2022}) defined 15 Minute City from the ``neighbour cores'' and Rhoads et al. (Section \ref{rhoads_inclusive_2023}, \cite{rhoads_inclusive_2023}) used a modified Dijkstra's algorithm to comupte a 15 Minute City on side-walk networks with a walkability analysis. The grid tessellatin approaches used by Gaglione et al. (Section \ref{gaglione_urban_2022}, \cite{gaglione_urban_2022}) and Olivari et al. (Section \ref{olivari_are_2023}, \cite{olivari_are_2023}) search for travelling time within a map.
+
+The solution proposed in this thesis is designed to be more general and adaptable to different types of graphs and service locations. Therefore, the solution to the problem stated in this section can be considered as an adoption or a modifictaion to these approaches to the 15-Minute City problem, specifically with an improvment of the computational efficieny in mind. The next section will discuss the proposed solutions

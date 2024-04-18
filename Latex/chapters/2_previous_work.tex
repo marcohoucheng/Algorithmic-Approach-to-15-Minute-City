@@ -1,9 +1,9 @@
-In this section, we will discuss a number of previous works of 15-Minute City. As this topic have been studied in various research fields in literature, we will group the works according to their methodologies and approaches, which include graph representation, grid tessellation, flow data, Walk Score, and other works. Table \ref{previous_works} provides a summary of these studies mentioned in this section excluding other works, specifically the methodologies discuessed and used in determining and finding the so-called "15-Minute City". Other works will cover studies about the general concept of the "15-Minute City". The following sections are the detailed descriptions of each study and methodology used.
+In this section, we will discuss a number of previous works of 15-Minute City. As this topic have been studied in various research fields in literature, we will group the works according to their methodologies and approaches, which include graph representation, grid tessellation, flow data, Walk Score, and other works. Table \ref{tab:previous_works} provides a summary of these studies mentioned in this section excluding other works, specifically the methodologies discuessed and used in determining and finding the so-called "15-Minute City". Other works will cover studies about the general concept of the "15-Minute City". The following sections are the detailed descriptions of each study and methodology used.
 
 \begin{table}[htbp]
     \begin{center}
         \caption{Summary of relevant previous works}
-        \label{previous_works}
+        \label{tab:previous_works}
         \begin{tabular}{ |c|c|c| }
             \hline
             \textbf{Approach} & \textbf{Work} & \textbf{Description} \\
@@ -23,9 +23,7 @@ In this section, we will discuss a number of previous works of 15-Minute City. A
 
 \section{Graph Representation}
 
-\subsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris}
-
-% \subsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris \texorpdfstring{\cite{barbieri_graph_2023}}{}} \label{barbieri_graph_2023}
+\subsection{Graph Representation of the 15-Minute City: A Comparison between Rome, London, and Paris} \label{barbieri_graph_2023}
 
 Barbieri et al. defined the general $t$-minute city (hereafter $t$-MC) on an urban graph with respect to a given set of services \cite{barbieri_graph_2023}. The urban graph is represented by a planer graph $G(V,E)$ (when a connected graph can be drawn without any edges crossing).
 
@@ -55,9 +53,9 @@ If $w(\cdot)$ is the population density, the edges of the parks and archaeologic
 
 For the case study, the authors used a "shortest path search algorithm” for graph search \cite{dijkstra_note_1959}.
 
-\textit{\textbf{Note}: This paper transform map data into a planar graph, the algorithm starts from services rather than houses which reduces computational complexity. The authors referenced an article about Dijkstra algorithm for graph search but their implementation was not mentioned.}
+\textit{\textbf{Remark}: This paper transform map data into a planar graph, the algorithm starts from services rather than houses which reduces computational complexity. The authors referenced an article about Dijkstra algorithm for graph search but their implementation was not mentioned.}
 
-\subsection{Exploring the 15-minute neighbourhoods}
+\subsection{Exploring the 15-minute neighbourhoods} \label{caselli_exploring_2022}
 
 According to the authors (Caselli et al.), \say{in the proposed study, the 15-Minute City theme is addressed with an analytical model designed and developed using GIS to assess existing conditions of accessibility to neighbourhood services for all the resident social groups.} \cite{caselli_exploring_2022}
 
@@ -71,13 +69,13 @@ where $\text{DF}$ is the delay factor at crossings (20 and 30 seconds for non-si
 
 The authors then compare this area with its population distribution to study the proportion of population covered by the 15-MC.
 
-\textit{\textbf{Notes:} The authors did not define the neighbour cores, only by saying \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery stores, bars, drugstores, and banks.} However, using such nodes to calculate for 15-Minute City contributes to faster running time. The actual 15-Minute City search approach was not mentioned.}
+\textit{\textbf{Remark:} The authors did not define the neighbour cores, only by saying \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery stores, bars, drugstores, and banks.} However, using such nodes to calculate for 15-Minute City contributes to faster running time. The actual 15-Minute City search approach was not mentioned.}
 
-\subsection{The inclusive 15-Minute City: Walkability analysis with sidewalk networks}
+\subsection{The inclusive 15-Minute City: Walkability analysis with sidewalk networks} \label{rhoads_inclusive_2023}
 
 The paper proposed a framework for assessing multi-factor walkability on a sidewalk network model \cite{rhoads_inclusive_2023}. The sidewalk network model is defined as a graph where the nodes are intersections or crosswalks, the edges have 3 types: sidewalks, crosswalks, and pedestrian-only paths and 4 attributes: length, width, slope, and pedestrian hazard. The pedestrian-only paths includes pedestrianised streets, living streets, and paths through parks and plazas. Pedestrian hazard is a metric to describe how dangerous each sidewalk segment by using a fine-grained map of estimated pedestrian safety in Barcelona \cite{bustos_explainable_2021} and by exploiting Deep Learning tools. The resulting network is denser than the road network (approximately 4 to 1 in both nodes and edges). Each node of the graph has also been assigned a population according to census data.
 
-This network is then simplified by a percolation analysis according to the sidewalks’ properties (i.e., width, slope, or hazard). The authors then noted that the analysis on the 1260m that can be travelled in 15 min at a walking speed of 1.4 m/s, in accordance with literature \cite{bosina_estimating_2017}. Using government data, the authors selected a list of services.
+This network is then simplified by a percolation analysis according to the sidewalks' properties (i.e., width, slope, or hazard). The authors then noted that the analysis on the 1260m that can be travelled in 15 min at a walking speed of 1.4 m/s, in accordance with literature \cite{bosina_estimating_2017}. Using government data, the authors selected a list of services.
 
 To find such a set of links, we extended the classic Dijkstra algorithm to
 
@@ -90,11 +88,11 @@ A formal description can be found in Section S3 of the Supplementary Materials, 
 
 The authors then studied the impact of population size of the largest and second largest connected component of Barcelona's sidewalk networks by changing the parameters of percolation analysis.
 
-\textit{\textbf{Notes:} This model takes hazard as a factor. The percolation analysis is a main focus of the study. The Supplementary notes also included the modification of Dijkstra algorithm.}
+\textit{\textbf{Remark:} This model takes hazard as a factor. The percolation analysis is a main focus of the study. The Supplementary notes also included the modification of Dijkstra algorithm.}
 
 \section{Grid Tessellation}
 
-\subsection{Urban accessibility in a 15-Minute City a measure in the city of Naples, Italy}
+\subsection{Urban accessibility in a 15-Minute City a measure in the city of Naples, Italy} \label{gaglione_urban_2022}
 
 The authors (Gaglione et al.) in this paper proposed a 4 steps methodology through a GIS environment to define the areas accessible in 15 minutes \cite{gaglione_urban_2022}.
 
@@ -113,9 +111,9 @@ The authors (Gaglione et al.) in this paper proposed a 4 steps methodology throu
 
 The authors then explored the effect of choosing different grid size, shapes etc. in terms of the results of the minute city.
 
-\textit{\textbf{Notes:} The authors did not specify walking speeds or any algorithms used in calculating travel times.}
+\textit{\textbf{Remark:} The authors did not specify walking speeds or any algorithms used in calculating travel times.}
 
-\subsection{Are Italian cities already 15-minute?}
+\subsection{Are Italian cities already 15-minute?} \label{olivari_are_2023}
 
 The authors (Olivari et al.) of this paper proposed a data-driven approach solution by defining the NExt proXimity Index (NEXI), which “exploits the data to answer the question: \say{Which parts of your city or town already follow the 15-minute model?} \cite{olivari_are_2023}
 
@@ -139,7 +137,7 @@ The algorithm computes the level of proximity of a given area as the mean of the
 $$\text{Discomfort} = (100-\text{Global})\times\text{Population}$$
 \end{enumerate}
 
-\textit{\textbf{Notes:} This paper takes the population distribution into account, only considering walking (but can be changed easily by varying the speed parameter). It does not use graph representation and there are no mentions of graph search algorithm. Though the authors mentioned that the algorithm could be sped up by using  "parallelisable algorithm”.}
+\textit{\textbf{Remark:} This paper takes the population distribution into account, only considering walking (but can be changed easily by varying the speed parameter). It does not use graph representation and there are no mentions of graph search algorithm. Though the authors mentioned that the algorithm could be sped up by using  "parallelisable algorithm”.}
 
 \subsection{Travel-time in a grid: modelling movement dynamics in the ``minute city"}
 
@@ -149,12 +147,12 @@ The authors claimed to “provide initial insights and recommendations for devel
     \item Grid tessellation choices
     \item Software application pick
     \item Speed selection for travel-time calculations
-    \item Classification rules’ adoption for mapping urban functions against mapped amenities
+    \item Classification rules' adoption for mapping urban functions against mapped amenities
 \end{enumerate}
 
 \say{The absence of standardised modelling protocols imposes significant limitations on the application of MC models, hinders synchronic comparisons, and can indirectly foster the formulation of exclusive policies and inconsistent planning decisions. Hence, it is crucial to undertake concerted efforts towards standardisation, including by bridging the gap between the planning practice and software development communities, to effectively address the existing challenges in MC modelling and representation. This entails establishing shared modelling protocols, algorithms (across various software applications), and standardised data inputs, all of which can substantially enhance the consistency and reliability of grid-based MC assessments focused on travel-time estimates. Ultimately, advancing research, fostering collaboration, and promoting knowledge sharing, can elevate the quality of evidence generated through spatial analysis, leading to better-informed decisions in MC planning.}
 
-\textit{\textbf{Note:} The authors concluded the article with the paragraph above, which highlights the importance of having a standardised method in calculating 15-Minute City. The results of the thesis can be used to be a harmonised solution to this.}
+\textit{\textbf{Remark:} The authors concluded the article with the paragraph above, which highlights the importance of having a standardised method in calculating 15-Minute City. The results of the thesis can be used to be a harmonised solution to this.}
 
 \section{Flow Data}
 
@@ -198,14 +196,14 @@ The Walk Score calculation can be summarised into 4 steps
 Walk Score ranges from 0 to 100, with the following descriptions:
 
 \begin{itemize}
-    \item 90–100: Walker’s Paradise. Daily errands do not require a car.
+    \item 90–100: Walker's Paradise. Daily errands do not require a car.
     \item 70–89: Very Walkable. Most errands can be accomplished on foot.
     \item 50–69: Somewhat Walkable. Some errands can be accomplished on foot.
     \item 25–49: Car-Dependent. Most errands require a car.
     \item 0–24: Car-Dependent. Almost all errands require a car.
 \end{itemize}
 
-\textit{\textbf{Notes:} The Walk Score algorithm is not open source. However, it considers walking distance between 5 to 30 minutes. Its calculation has been validated \cite{carr_validation_2011}}
+\textit{\textbf{Remark:} The Walk Score algorithm is not open source. However, it considers walking distance between 5 to 30 minutes. Its calculation has been validated \cite{carr_validation_2011}}
 
 \subsection{The 15-Minute Walkable Neighbourhoods: Measurement, Social Inequalities and Implications for Building Healthy Communities in Urban China}
 
@@ -217,9 +215,9 @@ In this paper, the authors (Weng et al.) noted some of the limitations of the Wa
     \item Actual traffic situation has not been considered when calculating distances based on Euclidean distance.
 \end{enumerate}
 
-They proposed a modified method to measure 15-min walkable neighbourhoods based on the Walk Score metric, taking into account pedestrians’ characteristics and amenity attributes (scale and category). 6 categories of amenities were studied, including education, medical care, municipal administration, finance and telecommunication, commercial services, and elderly care. They delivered the questionnaire to 132 respondents to conclude the parameters considered in the metric. They also used a decay factor to account for different age groups etc in terms of walking speed.
+They proposed a modified method to measure 15-min walkable neighbourhoods based on the Walk Score metric, taking into account pedestrians' characteristics and amenity attributes (scale and category). 6 categories of amenities were studied, including education, medical care, municipal administration, finance and telecommunication, commercial services, and elderly care. They delivered the questionnaire to 132 respondents to conclude the parameters considered in the metric. They also used a decay factor to account for different age groups etc in terms of walking speed.
 
-\textit{\textbf{Notes:} This paper did not consider any algorithm and modification is heavily based on a questionnaire.}
+\textit{\textbf{Remark:} This paper did not consider any algorithm and modification is heavily based on a questionnaire.}
 
 \section{Other works}
 
