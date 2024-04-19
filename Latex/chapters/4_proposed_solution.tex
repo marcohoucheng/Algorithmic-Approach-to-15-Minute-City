@@ -53,25 +53,21 @@ The modified Dijkstra's algorithm shown above only searches for vertices within 
 
 \begin{algorithm}[H]
     \caption{15-Minute City Algorithm}\label{alg:15mc}
-    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $n$ types\\
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $p$ types\\
     \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
     \begin{algorithmic}
         \ForAll{vertex $v \in V$}
-            \State $v.r \gets \{\mathbf{0}\}^{n}$
+            \State $v.r \gets \{\mathbf{0}\}^{p}$
             \State $v.l \gets 0$
         \EndFor
         \ForAll{service $v \in S$}
             \State $v.l \gets i^{th}$ type of service
         \EndFor
-        \For {each service type $i\in\{1,...,n\}$}
+        \For {each service type $i\in\{1,...,p\}$}
             % \State $S\gets\emptyset$
             \For {each vertex $s$ where $s.l=i$}
                 \State $\text{Modified\_Dijkstra}(G,w,s,t,i)$
-                % \State $S\gets S\cup\text{ModifiedDijkstra}(G,w,s,t,i)$
             \EndFor
-            % \For {each vertex $v\in S$}
-            %     \State $v.r[i] \gets 1$
-            % \EndFor
         \EndFor
         \State $R\gets\emptyset$
         \For {each vertex $v\in V$}
@@ -97,7 +93,7 @@ The time complexity of the algorithm is also affected by the data structure used
 
 As the latter two operations in the algorithm dominates the former two operations, the time complexity of algorithm \ref{alg:modified_dijsktra} is $O((V+E)\log V)$ if a binary heap is implemented. This can be reduced to $O(V\log V+E)$ if a Fibonacci heap is considered instead.
 
-For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $m$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(n\cdot m\cdot(V\log V+E))$ if a binary heap is implemented and $O(n\cdot m\cdot(V\log V+E))$ if a Fibonacci heap is implemented. In both cases, the time complexity consider the size of the entire graph, which could be arbitrarily large when a city or a large area is studied. Due to the fact that the modified dijsktra's algorithm stops once all nodes within weight $t$ are searched, it is important to note that the actual complexity of the algorithm could be potentially much smaller.
+For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $q$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(p\cdot q\cdot(V\log V+E))$ if a binary heap is implemented and $O(p\cdot q\cdot(V\log V+E))$ if a Fibonacci heap is implemented. In both cases, the time complexity consider the size of the entire graph, which could be arbitrarily large when a city or a large area is studied. Due to the fact that the modified dijsktra's algorithm stops once all nodes within weight $t$ are searched, it is important to note that the actual complexity of the algorithm could be potentially much smaller.
 
 \begin{figure}[H]
     \centering
@@ -117,7 +113,7 @@ For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run f
     % \label{fig:two graphs}
 \end{figure}
 
-For example, consider a city with only square grids and each edge has a weight of 1 (see image \ref{fig:grid_city}). The algorithm will effectively search a total of $1,024$ edges and $545$ nodes for $t=15$. In general, given a time threshold $t$, the number of nodes and edges searched by the modified dijastra algorithm can be calculated as follows:
+For example, consider a city with only square grids and each edge has a weight of 1 (see image \ref{fig:grid_city}). The algorithm will effectively search a total of $1,024$ edges and $545$ nodes for $t=15$. In general, for a grid city (where each node has a degree of 4) given a time threshold $t$, the number of nodes and edges searched by the modified dijastra algorithm can be calculated as follows:
 
 $$
 \begin{aligned}
@@ -160,7 +156,7 @@ $$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\r
 %     \label{fig:tree_city}
 % \end{figure}
 
-For the  space complexity, it is important to note that the proposed modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(n\cdot m\cdot V)$. Hence the algorithm proposed is not suitable for large graphs for space complexity.
+For the space complexity, it is important to note that the proposed modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(n\cdot m\cdot V)$. Hence the algorithm proposed is not suitable for large graphs for space complexity.
 
 \section{Uniform Cost Search}
 
