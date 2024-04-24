@@ -2,7 +2,15 @@
 \begin{Abstract}
 \begin{changemargin}{1cm}{1cm}
 
-15 Minute City is a new idea in the literature world. First proposed by Moreno in 2016 as an idea to improve sustainability, economical ... benefits. However, the concept of 15 Minute City is still not well defined. In this thesis, we aim to provide a general, adaptable algorithm to identify the 15 Minute City, where a person can travel to all their needs within 15 minutes from their home. The algorithm takes a graph data structure $G(V,E)$ representing the entire area of which the 15 Minute City is computed, and a time threshold $t$ in minutes as inputs. The output is a set of vertices $R\subseteq V$ of vertices which can reach at least one location of each service type within $t$ minutes. The algorithm uses a modified graph search algorithm to find the 15 Minute City with the service locations of each type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph. The solution proposed in this thesis is designed to be more general and adaptable to different types of graphs and service locations. The next section will discuss the proposed solutions.
+The 15-Minute City is an urban planning concept introduced in the last decade, it promotes accessibility of basic needs within a short distance in urban areas and aims to provide environmental, social, and economical benefits to society. The concept has gained popularity during the COVID-19 pandemic, as it has highlighted the importance of local services and amenities in urban areas. The 15-Minute City is based on the idea that residents should be able to access basic needs, such as groceries, education, healthcare, and leisure, within a 15-minute travelling time from their homes.
+
+\vspace{0.5cm}
+
+The concept of the 15-Minute City has been studied in different research fields, including urban planning, transportation, and environmental science. However, there is not a general methodology to determine the areas of a city that can be classified as a 15-Minute City. Most of the existing studies are data driven and focus on specific cities, their solutions are often not algorithmic nor generalised.
+
+\vspace{0.5cm}
+
+The aim of this thesis is to provide a general, adaptive and efficient algorithm to determine the areas of a city that can be classified as a 15-Minute City. A number of existing algorithms on graph data structure are studied, including Breadth-First Search, Dijkstra's algorithm, Johnson's algorithm and some of their variations. The ``15-Minute City algorithm" is then proposed, by combining various ideas and techniques from various algorithms to create a comprehensive and efficient solution that can be used to determine the areas of a city that can be classified as a 15-Minute City.
 
 \end{changemargin}
 \end{Abstract}
