@@ -150,13 +150,13 @@ $$O(V\log V+E)=O(d^{t+1}\log d^{t+1}+d^{t+1})=O(d^{t+1}\log d^{t+1})$$
 
 Therefore, the time complexity of the 15-Minute City algorithm on this graph is:
 
-$$O\left(n\cdot m\cdot d^{t+1}\log d^{t+1}\right)$$
+$$O\left(p\cdot q\cdot d^{t+1}\log d^{t+1}\right)$$
 
 This can be considered as the worst case in time complexity for the algorithm with the maximum possible of degree $d$ and time threshold $t$.
 
 To generalise this notation to edge weights other than 1, define $\epsilon$ as the minimum edge weight in the graph. Then the algorithm can travel at most $\floor*{t/\epsilon}$ edges in $t$ minutes. Therefore, the time complexity of the algorithm can be expressed as:
 
-$$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)$$
+$$O\left(p\cdot q\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)$$
 
 \subsubsection{Cases where the city is smaller than the ``15-Minute City''}
 
@@ -164,7 +164,7 @@ In this case, the city is smaller than the 15-Minute City, the algorithm will se
 
 \section{Uniform Cost Search Adaption}
 
-For the space complexity of the propsed algorithm above, it is important to note that the modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(n\cdot m\cdot V)$. Hence the algorithm proposed may not be suitable for large graphs for space complexity.
+For the space complexity of the propsed algorithm above, it is important to note that the modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(p\cdot q\cdot V)$. Hence the algorithm proposed may not be suitable for large graphs for space complexity.
 
 The problem described here can be solved by adapting a so-called ``Uniform Cost Search" algorithm (also known as ``Dijkstra for large graphs"). The algorithm is an extension of Best-first search and it is similar to Dijkstra's algorithm. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:modified_dijsktra2}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
 
@@ -200,11 +200,11 @@ The problem described here can be solved by adapting a so-called ``Uniform Cost 
 
 In this implementation, the time complexity remain the same as Dijkstra's algorithm in the worst case scenario. However, the algorithm is more efficient in practice as it only inserts vertices that are reachable within the time threshold $t$ into the priority queue. Here, the space complexity becomes
 
-$$O\left(n\cdot m\cdot d^{1+\floor*{t/\epsilon}}\right)$$
+$$O\left(p\cdot q\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
 or
 
-$$O\left(n\cdot m\cdot V\right)$$
+$$O\left(p\cdot q\cdot V\right)$$
 
 if the city is smaller than the 15-Minute City.
 
