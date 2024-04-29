@@ -18,7 +18,7 @@ We extend the algorithm so that the algotithm will stop once all nodes within $t
 As the 15-Minute City concept is primarily used to study cities' characteristics, the input graph of the algorithm is expected to be far larger than each 15 minute area. Therefore, it is necessary to stop the algorithm once all nodes within $t$ minutes have been visited to prevent the algorithm from running indefinitely. The modified algorithm is shown in Algorithm \ref{alg:modified_dijsktra}.
 
 \begin{algorithm}[H]
-    \caption{Modified Dijkstra Algorithm} \label{alg:modified_dijsktra}
+    \caption{Modified Dijkstra's Algorithm} \label{alg:modified_dijsktra}
     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
     \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$ % Set $S$ of vertices reachable by at most $t$ minutes
     \begin{algorithmic}
@@ -58,14 +58,13 @@ The modified Dijkstra's algorithm shown above only searches for vertices within 
     \begin{algorithmic}
         \ForAll{vertex $v \in V$}
             \State $v.r \gets \{\mathbf{0}\}^{p}$
-            \State $v.l \gets 0$
+            \State $v.l \gets \{\mathbf{0}\}^{p}$
         \EndFor
         \ForAll{service $v \in S$}
-            \State $v.l \gets i^{th}$ type of service
+            \State $v.l[i] \gets 1$ for each type $i$ of service $v$ contains
         \EndFor
         \For {each service type $i\in\{1,...,p\}$}
-            % \State $S\gets\emptyset$
-            \For {each vertex $s$ where $s.l=i$}
+            \For {each vertex $s$ where $s.l[i]=1$}
                 \State $\text{Modified\_Dijkstra}(G,w,s,t,i)$
             \EndFor
         \EndFor
@@ -115,6 +114,8 @@ For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run f
 
 \subsubsection{Cases where the city is larger than the ``15-Minute City''}
 
+\paragraph{Example}
+
 Consider a city with only square grids and each edge has a weight of 1 (see image \ref{fig:grid_city}). The algorithm will effectively search a total of $1,024$ edges and $545$ nodes for $t=15$. In general, for a grid city (where each node has a degree of 4) given a time threshold $t$, the number of nodes and edges searched by the modified dijastra algorithm can be calculated as follows:
 
 $$
@@ -126,6 +127,8 @@ $$
 $$
 
 This structure of a grid-like city can be applicable to cities such as New York and Barcelona.
+
+\paragraph{Generalisation}
 
 However, if the graph of interest has the following characteristics: starting from the source node $s$, every node has $d$ successors with $d$ edges of weight 1. (An illustration of the graph with 2 levels and $d = 4$ are shown in figure \ref{fig:tree_city}) In this arrangment, given a time threshold $t$ and $d$ the number of nodes branching out from each parent node, the number of nodes and edges need to be visited are as follows:
 
@@ -163,10 +166,10 @@ In this case, the city is smaller than the 15-Minute City, the algorithm will se
 
 For the space complexity of the propsed algorithm above, it is important to note that the modification algorithm of Dijkstra's algorithm inserts all $V$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(n\cdot m\cdot V)$. Hence the algorithm proposed may not be suitable for large graphs for space complexity.
 
-The problem described here can be solved by adapting a so-called ``Uniform Cost Search" algorithm (also known as ``Dijkstra for large graphs"). The algorithm is an extension of Best-first search and it is similar to Dijkstra's algorithm. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:uniform_cost_search}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
+The problem described here can be solved by adapting a so-called ``Uniform Cost Search" algorithm (also known as ``Dijkstra for large graphs"). The algorithm is an extension of Best-first search and it is similar to Dijkstra's algorithm. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:modified_dijsktra2}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
 
 \begin{algorithm}[H]
-    \caption{Modified Uniform Cost Search} \label{alg:uniform_cost_search}
+    \caption{Modified Dijkstra's Algorith 2} \label{alg:modified_dijsktra2}
     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
     \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$ % Set $S$ of vertices reachable by at most $t$ minutes
     \begin{algorithmic}
@@ -178,7 +181,7 @@ The problem described here can be solved by adapting a so-called ``Uniform Cost 
             \If {$v.d>t$}
                 \State $Q\gets\emptyset$ \Comment{Break out of While loop}
             \Else
-                \State $v.r[i] \gets 1 $
+                \State $v.r[i] \gets 1$
                 \For {each vertex $u\in Adj[v]$}
                     \If {$u\notin Q$}
                         \State $u.d\gets v.d+w(u,v)$ % Update reached[u] to v.d+w(u,v)
@@ -213,21 +216,21 @@ This approach can be applied to the 15-Minute City problem by adding a new verte
 
 \begin{algorithm}[H]
     \caption{15-Minute City Algorithm 2} \label{alg:15mc2}
-    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $n$ types\\
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $p$ types\\
     \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
     \begin{algorithmic}
         \ForAll{vertex $v \in V$}
             \State $v.r \gets \{\mathbf{0}\}^{n}$
-            \State $v.l \gets 0$
+            \State $v.l \gets \{\mathbf{0}\}^{n}$
         \EndFor
         \ForAll{service $v \in S$}
-            \State $v.l \gets i^{th}$ type of service
+            \State $v.l[i] \gets 1$ for each type $i$ of service $v$ contains
         \EndFor
         \For {each service type $i\in\{1,...,n\}$}
             \State Create a new vertex $s$
             \State Add edges from $s$ to all vertices $v$ where $v.l=i$ and $w(s,v)=0$
-            \State $\text{Modified\_Uniform\_Cost\_Search}(G,w,s,t,i)$
-            \State Remove $s$ and all edges connected  to it
+            \State $\text{Modified\_Dijkstra\_2}(G,w,s,t,i)$
+            \State Remove $s$ and all edges connected to it
         \EndFor
         \State $R\gets\emptyset$
         \For {each vertex $v\in V$}
@@ -240,7 +243,7 @@ This approach can be applied to the 15-Minute City problem by adding a new verte
 
 \subsection{Analysis}
 
-For each service type, the proposed approach increases the number of vertices by 1 and the number of edges by the number of service vertices of the same type. Denote $q_w$ as the maximum number of service vertices of the same type, then for each service type, Modified\_Uniform\_Cost\_Search algorithm \ref{alg:uniform_cost_search} is run, where the algorithm starts from the newly inserted vertex $s$, it visits at most $q_w$ vertices and continues its search as before. The time complexity of the Modified\_Uniform\_Cost\_Search algorith is then:
+For each service type, the proposed approach increases the number of vertices by 1 and the number of edges by the number of service vertices of the same type. Denote $q_w$ as the maximum number of service vertices of the same type, then for each service type, Modified\_Dijkstra\_2 algorithm (Algorithm \ref{alg:modified_dijsktra2}) is run, where the algorithm starts from the newly inserted vertex $s$, it visits at most $q_w$ vertices and continues its search as before. The time complexity of the Modified\_Dijkstra\_2 algorith is then:
 
 $$O(q_w\cdot(d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}))=O((d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}))$$
 
@@ -257,3 +260,75 @@ $$O\left(p\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)\t
 respectively, which are smaller by an order of $q_w$ compared to the previous algorithm.
 
 \section{Remove duplicate search}
+
+Although Algorithm \ref{alg:15mc2} has improved on efficiency compared to the original proposed algorithm (Algorithm \ref{alg:15mc}). There is still room for improvment for cases where more than 1 service type is located at the same vertex. In this case, the same set of nodes will be searched multiple times for each service type. The below algorithm (\ref{alg:15mc3} and \ref{alg:modified_dijsktra3}) shows a further modification to Algorithm \ref{alg:15mc2} to remove duplicate search. 
+
+\begin{algorithm}[H]
+    \caption{15-Minute City Algorithm 3} \label{alg:15mc3}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $p$ types\\
+    \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
+    \begin{algorithmic}
+        \ForAll{vertex $v \in V$}
+            \State $v.r \gets \{\mathbf{0}\}^{n}$
+            \State $v.l \gets \{\mathbf{0}\}^{n}$
+        \EndFor
+        \ForAll{service $v \in S$}
+            \State $v.l[i] \gets 1$ for each type $i$ of service $v$ contains
+            \State $v.k \gets 0$ \Comment{Indicate whether the vertex has been searched}
+        \EndFor
+        \For {each service type $i\in\{1,...,n\}$}
+            \State Create a new vertex $s$ and denote a set $S = \{v: i\in v.l \text{ and } v.k = 0\}$
+            \State Add edges from $s$ to all vertices in $S$ and initialise $w(s,v)=0$
+            \State $\text{Modified\_Dijkstra\_2}(G,w,s,S,t)$
+            \State Remove $s$ and all edges connected to it
+        \EndFor
+        \State $R\gets\emptyset$
+        \For {each vertex $v\in V$}
+            \If {$v.r = \mathbf{1}$}
+                \State $R \gets R\cup \{v\}$
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{Modified Dijkstra's Algorith 3} \label{alg:modified_dijsktra3}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} $S$ set of vertices of type $i$ and time threshold $t$\\
+    \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$, for each service type $i$ where $v.l[i]=1$
+    \begin{algorithmic}
+        \State $Q\gets\emptyset$ \Comment{Initialise an empty priority queue}
+        % \State $R\gets\emptyset$ \Comment{Initialise a lookup table for reachable vertices}
+        \State INSERT($Q,s$)
+        \While {$Q\neq\emptyset$}
+            \State $v\gets$EXTRACT-MIN$(Q)$
+            \State $v.k\gets1$ \Comment{Mark the vertex as searched}
+            \If {$v\notin S$}
+                \State $w \gets v.parent$
+                \State $v.l \gets w.l$
+            \EndIf
+            \State $I \gets v.l$ \Comment{Get the set of service types $v$ contains}
+            \If {$v.d>t$}
+                \State $Q\gets\emptyset$ \Comment{Break out of While loop}
+            \Else
+                \For {each service type $i\in I$}
+                    \State $v.r[i] \gets 1$
+                \EndFor
+                \For {each vertex $u\in Adj[v]$}
+                    \State $u.parent\gets v$
+                    \If {$u\notin Q$}
+                        \State $u.d\gets v.d+w(u,v)$ % Update reached[u] to v.d+w(u,v)
+                        \State INSERT($Q,u$)
+                    \ElsIf{$u.d>v.d+w(u,v)$}
+                        \State $u.d\gets v.d+w(u,v)$
+                        \State DECREASE-KEY($Q,u,u.d$)
+                    \EndIf
+                \EndFor
+            \EndIf
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+Note: The implementation represented here is not safe. See notes.
+
+% if shared with another service, mark it as searched and search for both
+% When search for the other service, don't search for the same node again
