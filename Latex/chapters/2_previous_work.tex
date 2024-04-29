@@ -29,7 +29,7 @@ Barbieri et al. defined the general $t$-minute city (hereafter $t$-MC) on an urb
 
 The nodes of $G$ are the intersections of the roads, and the lengths of the edges are proportional to the travel time with a coefficient, which is the speed of the pedestrians. Services $f\in V$ are then placed by adding an extra node to the graph, or use the nearest junction (as per Euclidean distance).
 
-Given a list of $N_i$ services of type $i$, $C^i_k=(C^i_1,C^i_2,...,C^i_{N_i})$ are the nodes that reach $f^i$ in less than 15 min. The set of vertices that form a 15-MC with respect to services of type $i$ is given by the union of all these vertices
+Given a list of $N_i$ services of type $i$, $C^i_k=(C^i_1,C^i_2,...,C^i_{N_i})$ are the nodes that reach $f^i$ in less than 15 minutes. The set of vertices that form a 15-MC with respect to services of type $i$ is given by the union of all these vertices
 
 $$ C^i=\bigcup_{k=1}^{N_i}C^i_k\subseteq V $$
 
@@ -75,7 +75,7 @@ The authors then compare this area with its population distribution to study the
 
 The paper proposed a framework for assessing multi-factor walkability on a sidewalk network model \cite{rhoads_inclusive_2023}. The sidewalk network model is defined as a graph where the nodes are intersections or crosswalks, the edges have 3 types: sidewalks, crosswalks, and pedestrian-only paths and 4 attributes: length, width, slope, and pedestrian hazard. The pedestrian-only paths includes pedestrianised streets, living streets, and paths through parks and plazas. Pedestrian hazard is a metric to describe how dangerous each sidewalk segment by using a fine-grained map of estimated pedestrian safety in Barcelona \cite{bustos_explainable_2021} and by exploiting Deep Learning tools. The resulting network is denser than the road network (approximately 4 to 1 in both nodes and edges). Each node of the graph has also been assigned a population according to census data.
 
-This network is then simplified by a percolation analysis according to the sidewalks' properties (i.e., width, slope, or hazard). The authors then noted that the analysis on the 1260m that can be travelled in 15 min at a walking speed of 1.4 m/s, in accordance with literature \cite{bosina_estimating_2017}. Using government data, the authors selected a list of services.
+This network is then simplified by a percolation analysis according to the sidewalks' properties (i.e., width, slope, or hazard). The authors then noted that the analysis on the 1260m that can be travelled in 15 minutes at a walking speed of 1.4 m/s, in accordance with literature \cite{bosina_estimating_2017}. Using government data, the authors selected a list of services.
 
 To find such a set of links, we extended the classic Dijkstra algorithm to
 
@@ -240,4 +240,4 @@ urban design, (6) flexibility, (7) connectivity. The authors summarised the sust
 
 \subsection{Urban Transition and the Return of Neighbourhood \\ Planning. Questioning the Proximity Syndrome and the \\ 15-Minute City}
 
-The authors of this paper developed an evidence-based approach to a deeper analysis of policy design and implementation of the 15 minute city \cite{marchigiani_urban_2022}. They concluded that the implementation and effectiveness of the 15 minute city depend on the concrete and contextual conformation of each city. The authors ended the paper stating that city development “needs some design framework and structure capable of addressing transformations, and their space and time location and sequences” on top of the “15 minute device” and that “it needs a syntax for an urban planning course of action that is incremental and adaptive but not limited to the contingent, blurred, and agnostic appeal of a catchy label.”
+The authors of this paper developed an evidence-based approach to a deeper analysis of policy design and implementation of the 15-Minute City \cite{marchigiani_urban_2022}. They concluded that the implementation and effectiveness of the 15-Minute City depend on the concrete and contextual conformation of each city. The authors ended the paper stating that city development “needs some design framework and structure capable of addressing transformations, and their space and time location and sequences” on top of the “15 minute device” and that “it needs a syntax for an urban planning course of action that is incremental and adaptive but not limited to the contingent, blurred, and agnostic appeal of a catchy label.”
