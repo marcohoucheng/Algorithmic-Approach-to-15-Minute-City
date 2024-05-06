@@ -1,4 +1,5 @@
 .DS_Store
+cache/
 Latex/main.aux
 Latex/main.bbl
 Latex/main.blg
