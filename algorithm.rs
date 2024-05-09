@@ -104,7 +104,37 @@ fn main() {
         }
     }
 
+    // Define a filter closure that checks if a node's label contains "a"
+    let filter = |node: NodeIndex, label: &str| -> bool {
+        if let Some(node_label) = graph.node_weight(node) {
+            node_label == label
+        } else {
+            false
+        }
+    };
+
+    // Loop through the HashSet
+    for fruit in &fruits {
+        // Create a NodeFiltered adaptor for each fruit
+        let filtered_graph = NodeFiltered::from_fn(&graph, |node| filter(node, fruit));
+        
+        // Collect all node indices from the filtered graph
+        let node_indices: Vec<NodeIndex> = filtered_graph.node_indices().collect();
+    }
+
+    // Create a NodeFiltered adaptor
+    let filtered_graph = NodeFiltered::from_fn(graph, filter);
+    // Collect all node indices from the filtered graph
+    let node_indices: Vec<NodeIndex> = filtered_graph.node_indices().collect();
+
     // Then add a node connecting to each of these nodes
+    // Add a new node to the original graph
+    let new_node = graph.add_node("new_node_label");
+
+    // Iterate over the node_indices and add an edge with weight 0 to each
+    for node_index in node_indices {
+        graph.add_edge(new_node, node_index, 0);
+    }
 
     // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
 
