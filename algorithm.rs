@@ -22,36 +22,58 @@ use petgraph::Graph;
 
 // Implement Dijkstra's algorithm
 
-fn dijkstra(graph: &Graph, start: &str) -> HashMap<String, f64> {
+fn export_to_csv(set: HashSet<String>, file_path: &str) -> Result<(), Box<dyn Error>> {
+    let mut writer = csv::Writer::from_writer(File::create(file_path)?);
+
+    for element in &set {
+        writer.write_record(&[element])?;
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn dijkstra(graph: Graph<f32, f32>, start: NodeIndex, threshold: f32) -> HashMap<NodeIndex, f32> {
     let mut distances: HashMap<String, f64> = HashMap::new();
     let mut heap = FibonacciHeap::init_min();
 
-    // Initialize distances and heap
-    for (node_id, _) in &graph.nodes {
-        distances.insert(node_id.clone(), f64::INFINITY);
-        heap.push(f64::INFINITY, node_id.clone());
+    // Initialize distances and insert the start node into the Fibonacci Heap
+    for node in graph.node_indices() {
+        let distance = if node == start { 0.0 } else { f32::INFINITY };
+        distances.insert(node, distance);
+        fib_heap.push((distance, node));
     }
 
-    // Set the distance for the start node to 0
-    distances.insert(start.to_string(), 0.0);
-    heap.decrease_key(&start.to_string(), 0.0);
+    // Main loop of the algorithm
+    while let Some((dist, node)) = fib_heap.pop() {
+        // If the current distance is greater than the threshold, break the loop
+        if dist > threshold {
+            break;
+        }
+        // Iterate over the outgoing edges and relax them
+        for edge in graph.edges(node) {
+            let next = edge.target();
+            let next_dist = dist + *edge.weight();
 
-    while let Some((_, u)) = heap.pop() {
-        if let Some(edges) = graph.edges.get(&u) {
-            for (v, &weight) in edges {
-                let alt = distances[&u] + weight;
-                if alt < distances[v] {
-                    distances.insert(v.clone(), alt);
-                    heap.decrease_key(v, alt);
-                }
+            // Check if the next node's distance can be improved
+            if next_dist < *distances.get(&next).unwrap_or(&f32::INFINITY) {
+                // Update the distance and adjust the position in the Fibonacci Heap
+                distances.insert(next, next_dist);
+                fib_heap.decrease_key(&(next_dist, next)); // This will need a custom implementation
+                // look at https://docs.rs/pheap/latest/pheap/ for a possible implementation
             }
         }
     }
 
-    distances
+    // Convert keys to a HashSet
+    let distances_set: HashSet<&str> = distances.keys().cloned().collect();
+    distances_set
 }
 
 fn main() {
+
+    // time threshold
+    let threshold = 15.0;
 
     // Load graph from CSV files
 
@@ -95,51 +117,42 @@ fn main() {
         unique_labels.insert(label);
     }
 
-    let label_to_find = "specific_label"; // Replace with the actual label
-    let mut nodes_with_specific_label = Vec::new();
-
-    for node_index in graph.node_indices() {
-        if graph[node_index] == label_to_find {
-            nodes_with_specific_label.push(node_index);
-        }
-    }
-
-    // Define a filter closure that checks if a node's label contains "a"
-    let filter = |node: NodeIndex, label: &str| -> bool {
-        if let Some(node_label) = graph.node_weight(node) {
-            node_label == label
-        } else {
-            false
-        }
-    };
-
-    // Loop through the HashSet
-    for fruit in &fruits {
-        // Create a NodeFiltered adaptor for each fruit
-        let filtered_graph = NodeFiltered::from_fn(&graph, |node| filter(node, fruit));
-        
-        // Collect all node indices from the filtered graph
-        let node_indices: Vec<NodeIndex> = filtered_graph.node_indices().collect();
-    }
-
-    // Create a NodeFiltered adaptor
-    let filtered_graph = NodeFiltered::from_fn(graph, filter);
-    // Collect all node indices from the filtered graph
-    let node_indices: Vec<NodeIndex> = filtered_graph.node_indices().collect();
-
-    // Then add a node connecting to each of these nodes
-    // Add a new node to the original graph
-    let new_node = graph.add_node("new_node_label");
-
-    // Iterate over the node_indices and add an edge with weight 0 to each
-    for node_index in node_indices {
-        graph.add_edge(new_node, node_index, 0);
-    }
-
-    // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
-
-    // Find intersection of all nodes visited
-
     let mut 15MC: HashSet<&str> = HashSet::new();
+
+    for label in unique_labels.iter() {
+        let mut services = Vec::new(); // nodes of the service 'label'
+
+        // Identify all nodes with the service label
+        for node_index in graph.node_indices() {
+            if graph[node_index] == label {
+                services.push(node_index);
+            }
+        }
+
+        // Create a new node
+        let new_node = graph.add_node(label); // node_index new_node
+
+        // Connect to all nodes of the service
+        for node_index in services {
+            graph.add_edge(new_node, node_index, 0);
+        }
+
+        // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
+
+        let tem_set = dijkstra(graph: &Graph, start: &str, )
+
+        // Find intersection of all nodes visited
+
+        let mut 15MC = 15MC.intersection(&tem_set)
+
+    }
+
+    let 15MC_vec: Vec<String> = 15MC.into_iter().collect();
+
+    // Output the nodes
+
+    export_to_csv(15MC_vec, "set_elements.csv")?;
+
+    Ok(())
 
 }
