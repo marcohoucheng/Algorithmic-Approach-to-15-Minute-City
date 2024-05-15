@@ -25,9 +25,10 @@ use pheap::graph::simplegraph::SimpleGraph;
 
 // Implement Dijkstra's algorithm
 
-fn dijkstra(graph: &SimpleGraph, start: NodeIndex, threshold: f32) -> HashMap<NodeIndex, f32> {
-    let mut distances: HashMap<String, f32> = HashMap::new();
+fn dijkstra(graph: &SimpleGraph, start: NodeIndex, threshold: f32) -> HashSet<&str> {
+    let mut distances: HashMap<u32, f32> = HashMap::new();
     let mut heap = PairingHeap::new();
+    let mut min_city: HashSet<&str> = HashSet::new();
 
     // Initialize distances and Heap
     for node in 0..graph.num_nodes() {
@@ -42,6 +43,7 @@ fn dijkstra(graph: &SimpleGraph, start: NodeIndex, threshold: f32) -> HashMap<No
         if dist > threshold {
             break;
         }
+        min_city.insert(node);
         // Iterate over the outgoing edges and relax them
         for edge in graph.edges_from(node) {
             let next = edge.to();
@@ -54,7 +56,7 @@ fn dijkstra(graph: &SimpleGraph, start: NodeIndex, threshold: f32) -> HashMap<No
         }
     }
 
-    dist
+    min_city
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,14 +82,24 @@ fn read_edges_from_csv(file_path: &str) -> Result<Vec<Edge>, Box<dyn Error>> {
     Ok(edges)
 }
 
-fn read_nodes_from_csv(file_path: &str) -> Result<Vec<Node>, Box<dyn Error>> {
+fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashMap<String, Vec<u32>>), Box<dyn Error>> {
     let mut rdr = Reader::from_path(file_path)?;
     let mut nodes = Vec::new();
+    let mut labels = HashMap::new();
+
+    let mut max_id = 0;
+
     for result in rdr.deserialize() {
         let node: Node = result?;
-        nodes.push(node);
+        if node.id > max_id {
+            max_id = node.id;
+        }
+        nodes.push(node.clone());
+        if let Some(label) = node.label {
+            labels.entry(label).or_insert_with(Vec::new).push(node.id);
+        }
     }
-    Ok(nodes)
+    Ok(nodes, labels, max_id)
 }
 
 fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>) -> SimpleGraph<u32> {
@@ -101,27 +113,9 @@ fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>) -> SimpleGraph<u32> {
     graph
 }
 
-fn export_to_csv(set: HashSet<String>, file_path: &str) -> Result<(), Box<dyn Error>> {
-    let mut writer = csv::Writer::from_writer(File::create(file_path)?);
-
-    for element in &set {
-        writer.write_record(&[element])?;
-    }
-
-    writer.flush()?;
-    Ok(())
-}
-
-#[derive(Serialize)]
-struct Record {
-    field1: String,
-    field2: u64,
-}
-
-fn write_hashset_to_csv(hashset: &HashSet<Record>) -> Result<(), Box<dyn Error>> {
+fn write_to_csv(hashset: &HashSet<u32>, file_path: &str) -> Result<(), Box<dyn Error>> {
     // Create a writer to write to a file
-    let file = File::create("output.csv")?;
-    let mut writer = Writer::from_writer(file);
+    let mut writer = csv::Writer::from_writer(File::create(file_path)?);
 
     // Iterate over the HashSet and serialize each item
     for record in hashset {
@@ -136,12 +130,38 @@ fn write_hashset_to_csv(hashset: &HashSet<Record>) -> Result<(), Box<dyn Error>>
 
 fn main() -> Result<(), Box<dyn Error>> {
     let edges = read_edges_from_csv("edge.csv")?;
-    let nodes = read_nodes_from_csv("nodes.csv")?;
+    let (nodes, unique_labels, max_id) = read_nodes_from_csv("nodes.csv")?;
     let graph = create_graph(edges, nodes);
 
-    let mut records = HashSet::new();
+    let mut min_city: HashSet<&u32> = nodes.iter().map(|node| node.id).collect();
+    let mut current_max_id = max_id;
+
+    for (label, node_ids) in labels.iter() {
+        // Create a new node with an ID greater than the current maximum
+        current_max_id += 1;
+        let new_node_id = current_max_id;
+
+        // Insert the new node into the graph
+        graph.add_node(new_node_id);
+
+        // Connect the new node to all nodes associated with the current label
+        for &node_id in node_ids {
+            graph.add_edge(new_node_id, node_id, 0);
+        }
+
+        // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
+
+        let tem_set = dijkstra(graph, new_node_id, 15)
+
+        // Find intersection of all nodes visited
+
+        let mut min_city = min_city.intersection(&tem_set)
+        // Remove the new node from the graph
+        graph.remove_node(new_node_id);
+    }
+
     // Write the HashSet data to a CSV file
-    write_hashset_to_csv(&records)?;
+    write_to_csv(&min_city, "output.csv")?;
 
     Ok(())
 }
