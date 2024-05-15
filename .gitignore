@@ -14,3 +14,5 @@ Latex/main.toc
 Latex/main.loa
 Latex/main.lof
 Latex/main.lot
+min_city/target/
+min_city/Cargo.lock
