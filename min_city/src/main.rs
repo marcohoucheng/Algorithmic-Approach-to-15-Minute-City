@@ -24,10 +24,10 @@ use pheap::graph::SimpleGraph;
 
 // Implement Dijkstra's algorithm
 
-fn dijkstra(graph: &SimpleGraph, start: u32, threshold: f32) -> HashSet<&str> {
+fn dijkstra(graph: &SimpleGraph, start: u32, threshold: f32) -> HashSet<&u32> {
     let mut distances: HashMap<u32, f32> = HashMap::new();
     let mut heap = PairingHeap::new();
-    let mut min_city: HashSet<&str> = HashSet::new();
+    let mut min_city: HashSet<&u32> = HashSet::new();
 
     // Initialize distances and Heap
     for node in 0..graph.num_nodes() {
@@ -82,7 +82,7 @@ fn read_edges_from_csv(file_path: &str) -> Result<Vec<Edge>, Box<dyn Error>> {
     Ok(edges)
 }
 
-fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashMap<String, Vec<u32>>), Box<dyn Error>> {
+fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashMap<String, Vec<u32>>, u32), Box<dyn Error>> {
     let mut rdr = Reader::from_path(file_path)?;
     let mut nodes = Vec::new();
     let mut labels = HashMap::new();
@@ -94,12 +94,12 @@ fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashMap<String, Ve
         if node.id > max_id {
             max_id = node.id;
         }
-        nodes.push(node.clone());
+        nodes.push(node);
         if let Some(label) = node.label {
             labels.entry(label).or_insert_with(Vec::new).push(node.id);
         }
     }
-    Ok(nodes, labels, max_id)
+    Ok((nodes, labels, max_id))
 }
 
 fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>) -> SimpleGraph<u32> {
