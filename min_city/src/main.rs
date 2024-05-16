@@ -13,7 +13,6 @@ use std::error::Error;
 use std::fs::File;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use serde::Serialize;
 use serde::Deserialize;
 use pheap::PairingHeap;
 use pheap::graph::SimpleGraph;
@@ -24,7 +23,7 @@ use pheap::graph::SimpleGraph;
 
 // Implement Dijkstra's algorithm
 
-fn dijkstra(graph: &SimpleGraph, start: u32, threshold: f32) -> HashSet<&u32> {
+fn dijkstra(graph: &SimpleGraph<u32>, start: u32, threshold: f32) -> HashSet<&u32> {
     let mut distances: HashMap<u32, f32> = HashMap::new();
     let mut heap = PairingHeap::new();
     let mut min_city: HashSet<&u32> = HashSet::new();
@@ -42,7 +41,7 @@ fn dijkstra(graph: &SimpleGraph, start: u32, threshold: f32) -> HashSet<&u32> {
         if dist > threshold {
             break;
         }
-        min_city.insert(node);
+        min_city.insert(&node);
         // Iterate over the outgoing edges and relax them
         for edge in graph.edges_from(node) {
             let next = edge.to(); // node_id u32
