@@ -18,8 +18,11 @@ use pheap::PairingHeap;
 use pheap::graph::SimpleGraph;
 
 // https://docs.rs/rudac/latest/rudac/heap/struct.FibonacciHeap.html
-// https://docs.rs/petgraph/latest/petgraph/
 // https://docs.rs/pheap/latest/pheap/
+
+// Use 
+// https://docs.rs/petgraph/latest/petgraph/ with UnGraphMap so node id can be used directly
+// https://docs.rs/priority-queue/latest/priority_queue/
 
 // Implement Dijkstra's algorithm
 
@@ -29,7 +32,7 @@ fn dijkstra(graph: &SimpleGraph<u32>, start: u32, threshold: f32) -> HashSet<&u3
     let mut min_city: HashSet<&u32> = HashSet::new();
 
     // Initialize distances and Heap
-    for node in 0..graph.num_nodes() {
+    for node in 0..graph.n_nodes() {
         let distance = if node == start { 0.0 } else { f32::MAX };
         distances.insert(node, distance);
         heap.insert(distance, node);
@@ -125,7 +128,6 @@ fn write_to_csv(hashset: &HashSet<u32>, file_path: &str) -> Result<(), Box<dyn E
     writer.flush()?;
     Ok(())
 }
-
 
 fn main() -> Result<(), Box<dyn Error>> {
     let edges = read_edges_from_csv("edge.csv")?;
