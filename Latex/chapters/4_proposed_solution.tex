@@ -222,13 +222,13 @@ This approach can be applied to the 15-Minute City problem by adding a new verte
     \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
     \begin{algorithmic}
         \ForAll{vertex $v \in V$}
-            \State $v.r \gets \{\mathbf{0}\}^{n}$
-            \State $v.l \gets \{\mathbf{0}\}^{n}$
+            \State $v.r \gets \{\mathbf{0}\}^{p}$
+            \State $v.l \gets \{\mathbf{0}\}^{p}$
         \EndFor
         \ForAll{service $v \in S$}
             \State $v.l[i] \gets 1$ for each service type $i$ which belongs to vertex $v$
         \EndFor
-        \For {each service type $i\in\{1,...,n\}$}
+        \For {each service type $i\in\{1,...,p\}$}
             \State Create a new vertex $s$
             \State Add edges from $s$ to all vertices $v$ where $v.l[i]=1$ and $w(s,v) \gets 0$
             \State $\text{Modified\_Dijkstra\_2}(G,w,s,t,i)$
