@@ -16,6 +16,7 @@ use std::collections::HashSet;
 use serde::Deserialize;
 use petgraph::graphmap::UnGraphMap;
 use priority_queue::PriorityQueue;
+use std::cmp::Reverse;
 
 // https://docs.rs/rudac/latest/rudac/heap/struct.FibonacciHeap.html
 // https://docs.rs/pheap/latest/pheap/
@@ -28,12 +29,12 @@ use priority_queue::PriorityQueue;
 
 fn dijkstra(graph: UnGraphMap<u32, f32>, nodes_data: HashMap<u32, NodeData> , start: u32, threshold: f32, i: usize) {
     let mut distances: HashMap<u32, f32> = HashMap::new();
-    let mut queue = PriorityQueue::new();
+    let mut queue: PriorityQueue<u32, f32> = PriorityQueue::new();
 
     // Initialize distances and Heap
     distances.insert(start, 0.0);
-    queue.push(start, std::cmp::Reverse(0.0));
-    while let Some((node, std::cmp::Reverse(distance))) = queue.pop() {
+    queue.push(start, 0.0);
+    while let Some((node, distance)) = queue.pop() {
         if distance > threshold {
             break;
         }
@@ -44,33 +45,7 @@ fn dijkstra(graph: UnGraphMap<u32, f32>, nodes_data: HashMap<u32, NodeData> , st
         for neighbor in graph.neighbors(node) {
             let edge_weight = graph.edge_weight(node, neighbor).unwrap();
             let potential_distance = distance + edge_weight;
-            priority_queue.push_increase(neighbor, std::cmp::Reverse(potential_distance));
-        }
-    }
-
-    // Initialize distances and Heap
-    for node in 0..graph.node_count() {
-        let distance = if node == start { 0.0 } else { f32::MAX };
-        distances.insert(node, distance);
-        queue.push(node, distance);
-    }
-
-    // Main loop of the algorithm
-    while let Some((node, dist)) = queue.pop() {
-        // If the current distance is greater than the threshold, break the loop
-        if dist > threshold {
-            break;
-        }
-        // Iterate over the outgoing edges and relax them
-        for edge in graph.edges(node) {
-            let next = edge.target(); // node_id u32
-            let next_dist = distances[&node].saturating_add(*edge.weight());
-
-            if next_dist < *distances.get(&next).unwrap_or(&f32::MAX) {
-                let mut delta = next_dist - *distances.get(&next).unwrap_or(&f32::MAX);
-                distances.insert(next, next_dist);
-                queue.push(next, next_dist);
-            }
+            queue.push_increase(neighbor, -potential_distance);
         }
     }
 }
