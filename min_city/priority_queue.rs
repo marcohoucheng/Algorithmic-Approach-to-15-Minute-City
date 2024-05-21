@@ -11,12 +11,12 @@ use csv::Reader;
 use csv::Writer;
 use std::error::Error;
 use std::fs::File;
-use std::cmp::Ordering;
-use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use serde::Deserialize;
 use petgraph::graphmap::UnGraphMap;
+use priority_queue::PriorityQueue;
+use std::cmp::Reverse;
 
 // https://docs.rs/rudac/latest/rudac/heap/struct.FibonacciHeap.html
 // https://docs.rs/pheap/latest/pheap/
@@ -25,55 +25,27 @@ use petgraph::graphmap::UnGraphMap;
 // https://docs.rs/petgraph/latest/petgraph/ with UnGraphMap so node id can be used directly
 // https://docs.rs/priority-queue/latest/priority_queue/
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-struct State {
-    cost: f32,
-    position: u32,
-}
-
-// The priority queue depends on `Ord`.
-// Explicitly implement the trait so the queue becomes a min-heap
-// instead of a max-heap.
-impl Ord for State {
-    fn cmp(&self, other: &Self) -> Ordering {
-        // Notice that the we flip the ordering on costs.
-        // In case of a tie we compare positions - this step is necessary
-        // to make implementations of `PartialEq` and `Ord` consistent.
-        other.cost.cmp(&self.cost)
-            .then_with(|| self.position.cmp(&other.position))
-    }
-}
-
-// `PartialOrd` needs to be implemented as well.
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
+// Implement Dijkstra's algorithm
 
 fn dijkstra(graph: UnGraphMap<u32, f32>, nodes_data: HashMap<u32, NodeData> , start: u32, threshold: f32, i: usize) {
-    let mut heap = BinaryHeap::new();
     let mut distances: HashMap<u32, f32> = HashMap::new();
+    let mut queue: PriorityQueue<u32, f32> = PriorityQueue::new();
 
-    heap.push(State { cost: 0.0, position: start });
+    // Initialize distances and Heap
     distances.insert(start, 0.0);
-    
-    while let Some(State { cost, position }) = heap.pop() {
-        if cost > threshold {
+    queue.push(start, 0.0);
+    while let Some((node, distance)) = queue.pop() {
+        if distance > threshold {
             break;
         }
 
-        let node_data = nodes_data.get_mut(&position).unwrap();
+        let mut node_data = nodes_data.get_mut(&node).unwrap();
         node_data.reach[i] = 1;
 
-        for neighbor in graph.neighbors(position) {
-            let edge_weight = graph.edge_weight(position, neighbor).unwrap();
-            let next = State { cost: cost + edge_weight, position: neighbor };
-            
-            if next.cost < distances[&neighbor] {
-                distances.insert(neighbor, next.cost);
-                heap.push(next);
-            }
+        for neighbor in graph.neighbors(node) {
+            let edge_weight = graph.edge_weight(node, neighbor).unwrap();
+            let potential_distance = distance + edge_weight;
+            queue.push_increase(neighbor, -potential_distance);
         }
     }
 }
@@ -171,7 +143,7 @@ fn write_to_csv(hashset: &HashSet<u32>, file_path: &str) -> Result<(), Box<dyn E
 fn main() -> Result<(), Box<dyn Error>> {
     let edges = read_edges_from_csv("edge.csv")?;
     let (nodes, unique_labels, max_id) = read_nodes_from_csv("nodes.csv")?;
-    let (mut graph, mut nodes_data) = create_graph(edges, nodes, &unique_labels);
+    let (graph, nodes_data) = create_graph(edges, nodes, &unique_labels);
 
     let mut current_max_id: u32 = max_id;
 
