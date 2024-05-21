@@ -9,14 +9,16 @@
 
 use csv::Reader;
 use csv::Writer;
-use std::error::Error;
 use std::fs::File;
-use std::cmp::Ordering;
+use std::error::Error;
+use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use serde::Deserialize;
 use petgraph::graphmap::UnGraphMap;
+use ordered_float::NotNan;
+use std::env;
 
 // https://docs.rs/rudac/latest/rudac/heap/struct.FibonacciHeap.html
 // https://docs.rs/pheap/latest/pheap/
@@ -25,54 +27,40 @@ use petgraph::graphmap::UnGraphMap;
 // https://docs.rs/petgraph/latest/petgraph/ with UnGraphMap so node id can be used directly
 // https://docs.rs/priority-queue/latest/priority_queue/
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-struct State {
-    cost: f32,
-    position: u32,
-}
-
-// The priority queue depends on `Ord`.
-// Explicitly implement the trait so the queue becomes a min-heap
-// instead of a max-heap.
-impl Ord for State {
-    fn cmp(&self, other: &Self) -> Ordering {
-        // Notice that the we flip the ordering on costs.
-        // In case of a tie we compare positions - this step is necessary
-        // to make implementations of `PartialEq` and `Ord` consistent.
-        other.cost.cmp(&self.cost)
-            .then_with(|| self.position.cmp(&other.position))
-    }
-}
-
-// `PartialOrd` needs to be implemented as well.
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-fn dijkstra(graph: UnGraphMap<u32, f32>, nodes_data: HashMap<u32, NodeData> , start: u32, threshold: f32, i: usize) {
+fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData> , start: u64, threshold: f64, i: usize) {
     let mut heap = BinaryHeap::new();
-    let mut distances: HashMap<u32, f32> = HashMap::new();
+    let mut distances: HashMap<u64, f64> = HashMap::new();
 
-    heap.push(State { cost: 0.0, position: start });
+    heap.push((Reverse(NotNan::new(0.0).unwrap()), start));
     distances.insert(start, 0.0);
+    // heap.push(State { cost: Reverse(NotNan::new(0.0).unwrap()), position: start });
+    // distances.insert(start, 0.0);
     
-    while let Some(State { cost, position }) = heap.pop() {
-        if cost > threshold {
+    while let Some(pop_node) = heap.pop() {
+        let distance = pop_node.0.0.into_inner();
+        println!("Popped Distance: {}", distance);
+        let node = pop_node.1;
+        println!("Start: {}, Node: {}, Distance: {}", start, node, distance);
+        if distance > threshold {
+            println!("Threshold reached");
             break;
         }
+        if node != start {
+            let node_data = nodes_data.get_mut(&node).unwrap();
+            println!("Reachable: {:?}", node_data.reach);
+            node_data.reach[i] += 1;
+        }
 
-        let node_data = nodes_data.get_mut(&position).unwrap();
-        node_data.reach[i] = 1;
+        for edge in graph.edges(node) {
+            println!("Edge: {:?}", edge);
+            let neighbor = edge.1;
+            let weight = *edge.2;
 
-        for neighbor in graph.neighbors(position) {
-            let edge_weight = graph.edge_weight(position, neighbor).unwrap();
-            let next = State { cost: cost + edge_weight, position: neighbor };
-            
-            if next.cost < distances[&neighbor] {
-                distances.insert(neighbor, next.cost);
-                heap.push(next);
+            let new_distance = distance + weight;
+
+            if new_distance < *distances.get(&neighbor).unwrap_or(&f64::INFINITY) {
+                distances.insert(neighbor, new_distance);
+                heap.push((Reverse(NotNan::new(new_distance).unwrap()), neighbor));
             }
         }
     }
@@ -80,14 +68,14 @@ fn dijkstra(graph: UnGraphMap<u32, f32>, nodes_data: HashMap<u32, NodeData> , st
 
 #[derive(Debug, Deserialize)]
 struct Edge {
-    source: u32,
-    target: u32,
-    weight: f32,
+    source: u64,
+    target: u64,
+    weight: f64,
 }
 
 #[derive(Debug, Deserialize)]
 struct Node {
-    id: u32,
+    id: u64,
     label: Option<String>, // Change to array later
 }
 
@@ -106,7 +94,7 @@ fn read_edges_from_csv(file_path: &str) -> Result<Vec<Edge>, Box<dyn Error>> {
     Ok(edges)
 }
 
-fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashSet<String>, u32), Box<dyn Error>> {
+fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashSet<String>, u64), Box<dyn Error>> {
     let mut rdr = Reader::from_path(file_path)?;
     let mut nodes = Vec::new();
     let mut unique_services: HashSet<String> = HashSet::new();
@@ -130,15 +118,17 @@ fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashSet<String>, u
     Ok((nodes, unique_services, max_id))
 }
 
-fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<String>) -> (UnGraphMap<u32, f32>, HashMap<u32, NodeData>){
+fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<String>) -> (UnGraphMap<u64, f64>, HashMap<u64, NodeData>){
     let mut graph = UnGraphMap::new();
     let service_list: Vec<String> = unique_services.iter().cloned().collect();
+    println!("Service List: {:?}", service_list);
     let p: usize = service_list.len();
+    println!("Value of p: {}", p);
     let mut node_vecs = HashMap::new();
 
     for node in nodes {
         let mut label_vector: Vec<usize> = vec![0; p];
-        let mut reach_vector: Vec<usize> = vec![0, p];
+        let reach_vector: Vec<usize> = vec![0; p];
         
         if let Some(label) = node.label {
             if let Some(pos) = service_list.iter().position(|x| x == &label) {
@@ -154,7 +144,7 @@ fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<St
     (graph, node_vecs)
 }
 
-fn write_to_csv(hashset: &HashSet<u32>, file_path: &str) -> Result<(), Box<dyn Error>> {
+fn write_to_csv(hashset: &HashSet<u64>, file_path: &str) -> Result<(), Box<dyn Error>> {
     // Create a writer to write to a file
     let mut writer = Writer::from_writer(File::create(file_path)?);
 
@@ -169,11 +159,16 @@ fn write_to_csv(hashset: &HashSet<u32>, file_path: &str) -> Result<(), Box<dyn E
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let edges = read_edges_from_csv("edge.csv")?;
-    let (nodes, unique_labels, max_id) = read_nodes_from_csv("nodes.csv")?;
+    env::set_var("RUST_BACKTRACE", "1");
+    // let args: Vec<String> = env::args().collect();
+    // let edge_csv = &args[1];
+    // let node_csv = &args[2];
+
+    let edges = read_edges_from_csv("./data/edges.csv")?;
+    let (nodes, unique_labels, max_id) = read_nodes_from_csv("./data/nodes.csv")?;
     let (mut graph, mut nodes_data) = create_graph(edges, nodes, &unique_labels);
 
-    let mut current_max_id: u32 = max_id;
+    let mut current_max_id: u64 = max_id;
 
     let p = unique_labels.len();
 
@@ -186,7 +181,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         graph.add_node(new_node_id);
 
         // Find all nodes associated with the current label
-        let service_locations: HashSet<u32> = HashSet::new();
+        let mut service_locations: HashSet<u64> = HashSet::new();
         for (id, node_data) in &nodes_data {
             let label_vector = &node_data.label;
 
@@ -197,30 +192,34 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
 
         for node_id in service_locations {
-            graph.add_edge(new_node_id, node_id, 0);
+            graph.add_edge(new_node_id, node_id, 0.0);
         }
         
         // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
-        dijkstra(graph, nodes_data, new_node_id, 15.0, i);
+        dijkstra(&graph, &mut nodes_data, new_node_id, 15.0, i);
         // Remove the new node from the graph
         graph.remove_node(new_node_id);
     }
 
-    let mut min_city: HashSet<u32> = HashSet::new();
-    for (id, node_data) in &nodes_data {
+    let mut min_city: HashSet<u64> = HashSet::new();
+    for (id, node_data) in nodes_data {
         let reach_vector = &node_data.reach;
-        let mut flag = true;
-        for i in 0..(p-1){
-            if reach_vector[i] == 0 {
-                flag = false;
-                break;
-            }
+        if reach_vector.iter().sum::<usize>() == p {
+            min_city.insert(id.clone());
         }
-        if flag {
-            min_city.insert(*id);
-        }
+        // let mut flag = true;
+        // for i in 0..(p-1){
+        //     if reach_vector[i] == 0 {
+        //         flag = false;
+        //         break;
+        //     }
+        // }
+        // if flag {
+        //     min_city.insert(id.clone());
+        // }
     }
 
+    println!("min_city: {:?}", min_city);
     // Write the HashSet data to a CSV file
     write_to_csv(&min_city, "output.csv")?;
 
