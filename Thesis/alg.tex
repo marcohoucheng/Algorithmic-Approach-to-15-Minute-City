@@ -1,0 +1,64 @@
+\documentclass[a4paper]{article}
+\usepackage[a4paper,top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath, amssymb, algorithm, algpseudocode, float}
+
+\pagenumbering{gobble}
+
+\begin{document}
+
+\begin{algorithm}[H]
+    \caption{Modified Dijkstra's Algorith}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} time threshold $t$ and $i$ denotes the index of the service type\\
+    \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to $s$ within threshold $t$
+    \begin{algorithmic}
+        \State $Q\gets\emptyset$
+        \State INSERT($Q,s$)
+        \While {$Q\neq\emptyset$}
+            \State $v\gets$EXTRACT-MIN$(Q)$
+            \If {$v.d>t$}
+                \State $Q\gets\emptyset$
+            \Else
+                \State $v.r[i] \gets 1$
+                \For {each vertex $u\in Adj[v]$}
+                    \If {$u\notin Q$}
+                        \State $u.d\gets v.d+w(u,v)$ % Update reached[u] to v.d+w(u,v)
+                        \State INSERT($Q,u$)
+                    \ElsIf{$u.d>v.d+w(u,v)$}
+                        \State $u.d\gets v.d+w(u,v)$
+                        \State DECREASE-KEY($Q,u,u.d$)
+                    \EndIf
+                \EndFor
+            \EndIf
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \caption{15-Minute City Algorithm}
+    \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $p$ types\\
+    \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
+    \begin{algorithmic}
+        \ForAll{vertex $v \in V$}
+            \State $v.r \gets \{\mathbf{0}\}^{p}$
+            \State $v.l \gets \{\mathbf{0}\}^{p}$
+        \EndFor
+        \ForAll{service $v \in S$}
+            \State $v.l[i] \gets 1$ for each service type $i$ which belongs to vertex $v$
+        \EndFor
+        \For {each service type $i\in\{1,...,p\}$}
+            \State Create a new vertex $s$
+            \State Add edges from $s$ to all vertices $v$ where $v.l[i]=1$ and $w(s,v) \gets 0$
+            \State $\text{Modified\_Dijkstra\_2}(G,w,s,t,i)$
+            \State Remove $s$ and all edges connected to it
+        \EndFor
+        \State $R\gets\emptyset$
+        \For {each vertex $v\in V$}
+            \If {$v.r = \mathbf{1}$}
+                \State $R \gets R\cup \{v\}$
+            \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\end{document}
