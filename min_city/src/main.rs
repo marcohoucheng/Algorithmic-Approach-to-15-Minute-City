@@ -8,7 +8,9 @@
 // Return nodes where visited array is all true
 
 use csv::Reader;
-use csv::Writer;
+// use csv::Writer;
+use std::time::{Instant, Duration};
+use std::io::{self, Write};
 use std::fs::File;
 use std::error::Error;
 use std::cmp::Reverse;
@@ -20,11 +22,7 @@ use petgraph::graphmap::UnGraphMap;
 use ordered_float::NotNan;
 use std::env;
 
-// https://docs.rs/rudac/latest/rudac/heap/struct.FibonacciHeap.html
-// https://docs.rs/pheap/latest/pheap/
-
-// Use 
-// https://docs.rs/petgraph/latest/petgraph/ with UnGraphMap so node id can be used directly
+// https://docs.rs/petgraph/latest/petgraph/
 // https://docs.rs/priority-queue/latest/priority_queue/
 
 fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData> , start: u64, threshold: f64, i: usize) {
@@ -33,33 +31,21 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
 
     heap.push((Reverse(NotNan::new(0.0).unwrap()), start));
     distances.insert(start, 0.0);
-
-    println!("Start: {}", start);
-
-    let mut reached_solo = HashSet::new();
     
     while let Some(pop_node) = heap.pop() {
         let distance = pop_node.0.0.into_inner();
-        println!("Popped Distance: {}", distance);
         let node = pop_node.1;
-        println!("Start: {}, Node: {}, Distance: {}", start, node, distance);
         if distance > threshold {
-            println!("Threshold reached");
             break;
         }
         if node != start {
-            println!("Non start node");
-            reached_solo.insert(node);
             let node_data = nodes_data.get_mut(&node).unwrap();
             node_data.reach[i] += 1;
-            println!("Reachable: {:?}", node_data.reach);
         }
 
         for edge in graph.edges(node) {
-            println!("Edge: {:?}", edge);
             let neighbor = edge.1;
             let weight = *edge.2;
-            println!("Weight: {}", weight);
 
             let new_distance = distance + weight;
 
@@ -69,7 +55,6 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
             }
         }
     }
-    println!("Reached Solo: {:?}", reached_solo);
 }
 
 #[derive(Debug, Deserialize)]
@@ -85,6 +70,7 @@ struct Node {
     label: Option<String>, // Change to array later
 }
 
+#[derive(Clone)]
 struct NodeData {
     label: Vec<usize>,
     reach: Vec<usize>,
@@ -127,9 +113,7 @@ fn read_nodes_from_csv(file_path: &str) -> Result<(Vec<Node>, HashSet<String>, u
 fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<String>) -> (UnGraphMap<u64, f64>, HashMap<u64, NodeData>){
     let mut graph = UnGraphMap::new();
     let service_list: Vec<String> = unique_services.iter().cloned().collect();
-    println!("Service List: {:?}", service_list);
     let p: usize = service_list.len();
-    println!("Value of p: {}", p);
     let mut node_vecs = HashMap::new();
 
     for node in nodes {
@@ -150,83 +134,131 @@ fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<St
     (graph, node_vecs)
 }
 
-fn write_to_csv(hashset: &HashSet<u64>, file_path: &str) -> Result<(), Box<dyn Error>> {
-    // Create a writer to write to a file
-    let mut writer = Writer::from_writer(File::create(file_path)?);
+// fn write_to_csv(hashset: &HashSet<u64>, file_path: &str) -> Result<(), Box<dyn Error>> {
+//     // Create a writer to write to a file
+//     let mut writer = Writer::from_writer(File::create(file_path)?);
 
-    // Iterate over the HashSet and serialize each item
-    for record in hashset {
-        writer.serialize(record)?;
-    }
+//     // Iterate over the HashSet and serialize each item
+//     for record in hashset {
+//         writer.serialize(record)?;
+//     }
 
-    // Flush the writer to ensure all data is written to the file
-    writer.flush()?;
+//     // Flush the writer to ensure all data is written to the file
+//     writer.flush()?;
+//     Ok(())
+// }
+
+fn write_to_csv(min_city: &HashSet<u64>, filename: &str) -> io::Result<()> {
+    // Create a comma-separated string from the HashSet elements
+    let csv_line = min_city.iter().map(|item| item.to_string()).collect::<Vec<_>>().join(",");
+
+    // Open the file for writing
+    let mut file = File::create(filename)?;
+
+    // Write the CSV line to the file
+    file.write_all(csv_line.as_bytes())?;
+
     Ok(())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     env::set_var("RUST_BACKTRACE", "1");
-    // let args: Vec<String> = env::args().collect();
-    // let edge_csv = &args[1];
-    // let node_csv = &args[2];
+
+    let args: Vec<String> = env::args().collect();
+    
+    if args.len() < 2 {
+        eprintln!("Usage: {} <f64_value> <u32_value>", args[0]);
+        std::process::exit(1);
+    }
+
+    let t: f64 = match args[1].parse() {
+        Ok(value) => value,
+        Err(_) => {
+            eprintln!("Error: Invalid f64 value provided.");
+            std::process::exit(1);
+        }
+    };
+
+    let repeat: u32 = if args.len() == 2 {
+        1
+    } else {
+        match args[2].parse() {
+            Ok(value) => value,
+            Err(_) => {
+                eprintln!("Error: Invalid u32 value provided.");
+                std::process::exit(1);
+            }
+        }
+    };
 
     let edges = read_edges_from_csv("./data/edges.csv")?;
     let (nodes, unique_labels, max_id) = read_nodes_from_csv("./data/nodes.csv")?;
-    let (mut graph, mut nodes_data) = create_graph(edges, nodes, &unique_labels);
+    let (mut graph, nodes_data_orginial) = create_graph(edges, nodes, &unique_labels);
 
-    let mut current_max_id: u64 = max_id;
+    let mut total_duration = Duration::new(0, 0);
+    
+    let mut min_city: HashSet<u64> = HashSet::new();
 
     let p = unique_labels.len();
 
-    for i in 0..(p){
-        println!("Service Type: {}", i);
-        // Create a new node with an ID greater than the current maximum
-        current_max_id += 1;
-        let new_node_id = current_max_id;
+    for _ in 0..repeat {
 
-        // Insert the new node into the graph
-        graph.add_node(new_node_id);
+        let mut nodes_data = nodes_data_orginial.clone();
 
-        // Find all nodes associated with the current label
-        let mut service_locations: HashSet<u64> = HashSet::new();
-        for (id, node_data) in &nodes_data {
-            let label_vector = &node_data.label;
+        let start_time = Instant::now(); // Start the timer
 
-            // Check if the label vector matches the current label
-            if label_vector[i] == 1 {
-                service_locations.insert(*id);
+        let mut current_max_id: u64 = max_id;
+
+        for i in 0..(p){
+            // Create a new node with an ID greater than the current maximum
+            current_max_id += 1;
+            let new_node_id = current_max_id;
+
+            // Insert the new node into the graph
+            graph.add_node(new_node_id);
+
+            // Find all nodes associated with the current label
+            let mut service_locations: HashSet<u64> = HashSet::new();
+            for (id, node_data) in &nodes_data {
+                let label_vector = &node_data.label;
+
+                // Check if the label vector matches the current label
+                if label_vector[i] == 1 {
+                    service_locations.insert(*id);
+                }
+            }
+
+            for node_id in service_locations {
+                graph.add_edge(new_node_id, node_id, 0.0);
+            }
+            
+            // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
+            dijkstra(&graph, &mut nodes_data, new_node_id, t, i);
+            // Remove the new node from the graph
+            graph.remove_node(new_node_id);
+        }
+
+        min_city.clear();
+        for (id, node_data) in nodes_data {
+            let reach_vector = &node_data.reach;
+            if reach_vector.iter().sum::<usize>() == p {
+                min_city.insert(id.clone());
             }
         }
 
-        for node_id in service_locations {
-            graph.add_edge(new_node_id, node_id, 0.0);
-        }
-        
-        // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
-        dijkstra(&graph, &mut nodes_data, new_node_id, 15.0, i);
-        // Remove the new node from the graph
-        graph.remove_node(new_node_id);
+        let end_time = Instant::now();
+        let duration = end_time - start_time;
+
+        total_duration += duration;
     }
 
-    let mut min_city: HashSet<u64> = HashSet::new();
-    for (id, node_data) in nodes_data {
-        let reach_vector = &node_data.reach;
-        if reach_vector.iter().sum::<usize>() == p {
-            min_city.insert(id.clone());
-        }
-        // let mut flag = true;
-        // for i in 0..(p-1){
-        //     if reach_vector[i] == 0 {
-        //         flag = false;
-        //         break;
-        //     }
-        // }
-        // if flag {
-        //     min_city.insert(id.clone());
-        // }
+    if repeat > 1 {
+        println!("Average execution time: {:?}", total_duration / repeat);
+    } else {
+        println!("Execution time: {:?}", total_duration);
     }
 
-    println!("min_city: {:?}", min_city);
+    println!("t-Minute City: {:?}", min_city);
     // Write the HashSet data to a CSV file
     write_to_csv(&min_city, "output.csv")?;
 
