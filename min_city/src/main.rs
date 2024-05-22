@@ -33,28 +33,28 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
 
     heap.push((Reverse(NotNan::new(0.0).unwrap()), start));
     distances.insert(start, 0.0);
-    // heap.push(State { cost: Reverse(NotNan::new(0.0).unwrap()), position: start });
-    // distances.insert(start, 0.0);
     
     while let Some(pop_node) = heap.pop() {
         let distance = pop_node.0.0.into_inner();
         println!("Popped Distance: {}", distance);
         let node = pop_node.1;
         println!("Start: {}, Node: {}, Distance: {}", start, node, distance);
-        if distance > threshold {
+        if distance > threshold { // this is never reached
             println!("Threshold reached");
             break;
         }
         if node != start {
+            println!("Non start node");
             let node_data = nodes_data.get_mut(&node).unwrap();
-            println!("Reachable: {:?}", node_data.reach);
             node_data.reach[i] += 1;
+            println!("Reachable: {:?}", node_data.reach);
         }
 
         for edge in graph.edges(node) {
             println!("Edge: {:?}", edge);
             let neighbor = edge.1;
             let weight = *edge.2;
+            println!("Weight: {}", weight);
 
             let new_distance = distance + weight;
 
