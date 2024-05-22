@@ -33,18 +33,23 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
 
     heap.push((Reverse(NotNan::new(0.0).unwrap()), start));
     distances.insert(start, 0.0);
+
+    println!("Start: {}", start);
+
+    let mut reached_solo = HashSet::new();
     
     while let Some(pop_node) = heap.pop() {
         let distance = pop_node.0.0.into_inner();
         println!("Popped Distance: {}", distance);
         let node = pop_node.1;
         println!("Start: {}, Node: {}, Distance: {}", start, node, distance);
-        if distance > threshold { // this is never reached
+        if distance > threshold {
             println!("Threshold reached");
             break;
         }
         if node != start {
             println!("Non start node");
+            reached_solo.insert(node);
             let node_data = nodes_data.get_mut(&node).unwrap();
             node_data.reach[i] += 1;
             println!("Reachable: {:?}", node_data.reach);
@@ -64,6 +69,7 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
             }
         }
     }
+    println!("Reached Solo: {:?}", reached_solo);
 }
 
 #[derive(Debug, Deserialize)]
@@ -172,7 +178,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let p = unique_labels.len();
 
-    for i in 0..(p-1){
+    for i in 0..(p){
+        println!("Service Type: {}", i);
         // Create a new node with an ID greater than the current maximum
         current_max_id += 1;
         let new_node_id = current_max_id;
