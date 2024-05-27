@@ -49,7 +49,7 @@
         \For {each service type $i\in\{1,...,p\}$}
             \State Create a new vertex $s$
             \State Add edges from $s$ to all vertices $v$ where $v.l[i]=1$ and $w(s,v) \gets 0$
-            \State $\text{Modified\_Dijkstra\_2}(G,w,s,t,i)$
+            \State $\text{Modified\_Dijkstra}(G,w,s,t,i)$
             \State Remove $s$ and all edges connected to it
         \EndFor
         \State $R\gets\emptyset$
