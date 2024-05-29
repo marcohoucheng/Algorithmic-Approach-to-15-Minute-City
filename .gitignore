@@ -1,6 +1,5 @@
 .DS_Store
 cache/
-data/
 **.aux
 **.bbl
 **.blg
@@ -16,5 +15,6 @@ data/
 **.lot
 **.snm
 **.nav
+images/
 min_city/target/
 min_city/Cargo.lock
