@@ -1,0 +1,16 @@
+Thesis
+- Why time instead of distance
+- Lack of complexity studies
+- Can be extended to support directed graphs
+
+Extend
+- Algorithms studied and why it is not adaptable
+- Experiments
+-- How was data captured
+-- Potential problems (with data quality)
+-- Compare cities or repeat existing studies
+
+Presentation
+- Complexity
+- Search from service locations
+- Why time instead of distance
