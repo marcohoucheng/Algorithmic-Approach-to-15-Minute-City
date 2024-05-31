@@ -67,7 +67,7 @@ struct Edge {
 #[derive(Debug, Deserialize)]
 struct Node {
     id: u64,
-    label: Option<String>, // Change to array later
+    label: Option<String>,
 }
 
 #[derive(Clone)]
