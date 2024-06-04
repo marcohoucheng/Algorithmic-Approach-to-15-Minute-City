@@ -252,11 +252,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         total_duration += duration;
     }
 
-    if repeat > 1 {
-        println!("Average execution time: {:?}", total_duration / repeat);
+    let excluded_iterations = if repeat * 5 / 100 > 10 { 10 } else { repeat * 5 / 100 };
+    let adjusted_repeat = repeat - excluded_iterations;
+    let adjusted_total_duration = total_duration - (total_duration / repeat * excluded_iterations);
+
+    if adjusted_repeat > 1 {
+        println!("Average execution time excluding the first {} iterations: {:?}", excluded_iterations, adjusted_total_duration / adjusted_repeat);
     } else {
         println!("Execution time: {:?}", total_duration);
     }
+    // if repeat > 1 {
+    //     println!("Average execution time: {:?}", total_duration / repeat);
+    // } else {
+    //     println!("Execution time: {:?}", total_duration);
+    // }
 
     println!("t-Minute City: {:?}", min_city);
     // Write the HashSet data to a CSV file
