@@ -16,5 +16,6 @@ cache/
 **.snm
 **.nav
 images/
+min_city/data/
 min_city/target/
 min_city/Cargo.lock
