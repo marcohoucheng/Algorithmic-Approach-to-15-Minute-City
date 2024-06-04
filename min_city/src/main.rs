@@ -40,7 +40,7 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
         }
         if node != start {
             let node_data = nodes_data.get_mut(&node).unwrap();
-            node_data.reach[i] += 1;
+            node_data.reach[i] = 1;
         }
 
         for edge in graph.edges(node) {
