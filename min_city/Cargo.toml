@@ -9,3 +9,5 @@ serde = { version = "1.0.202", features = ["derive"] }
 petgraph = "0.6.5"
 priority-queue = "2.0.2"
 ordered-float = "4.2.0"
+chrono = "0.4"
+indicatif = "0.16"

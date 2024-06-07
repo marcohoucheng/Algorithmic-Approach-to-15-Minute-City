@@ -21,6 +21,7 @@ use serde::Deserialize;
 use petgraph::graphmap::UnGraphMap;
 use ordered_float::NotNan;
 use std::env;
+use chrono::Local;
 
 // https://docs.rs/petgraph/latest/petgraph/
 // https://docs.rs/priority-queue/latest/priority_queue/
@@ -35,9 +36,11 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
     while let Some(pop_node) = heap.pop() {
         let distance = pop_node.0.0.into_inner();
         let node = pop_node.1;
+
         if distance > threshold {
             break;
         }
+
         if node != start {
             let node_data = nodes_data.get_mut(&node).unwrap();
             node_data.reach[i] = 1;
@@ -51,6 +54,7 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
 
             if new_distance < *distances.get(&neighbor).unwrap_or(&f64::INFINITY) {
                 distances.insert(neighbor, new_distance);
+                // *distances.get_mut(&neighbor).unwrap() = new_distance;
                 heap.push((Reverse(NotNan::new(new_distance).unwrap()), neighbor));
             }
         }
@@ -166,8 +170,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let args: Vec<String> = env::args().collect();
     
-    if args.len() < 2 {
-        eprintln!("Usage: {} <f64_value> <u32_value>", args[0]);
+    if args.len() < 2 || args.len() > 3 {
+        eprintln!("Usage: {} <f64_value> Optional(<u32_value>)", args[0]);
         std::process::exit(1);
     }
 
@@ -179,9 +183,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    let repeat: u32 = if args.len() == 2 {
-        1
-    } else {
+    let repeat: u32 = if args.len() == 3 {
         match args[2].parse() {
             Ok(value) => value,
             Err(_) => {
@@ -189,6 +191,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 std::process::exit(1);
             }
         }
+    } else {
+        1
     };
 
     let edges = read_edges_from_csv("./data/edges.csv")?;
@@ -200,6 +204,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut min_city: HashSet<u64> = HashSet::new();
 
     let p = unique_labels.len();
+
+    println!("Number of unique service types: {:?}", p);
+    println!("Number of nodes: {:?}", graph.node_count());
+    println!("Number of edges: {:?}", graph.edge_count());
 
     for _ in 0..repeat {
 
@@ -213,7 +221,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Create a new node with an ID greater than the current maximum
             current_max_id += 1;
             let new_node_id = current_max_id;
-
+            
             // Insert the new node into the graph
             graph.add_node(new_node_id);
 
@@ -250,7 +258,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         let duration = end_time - start_time;
 
         total_duration += duration;
+
     }
+
 
     let excluded_iterations = if repeat * 5 / 100 > 10 { 10 } else { repeat * 5 / 100 };
     let adjusted_repeat = repeat - excluded_iterations;
@@ -261,15 +271,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         println!("Execution time: {:?}", total_duration);
     }
-    // if repeat > 1 {
-    //     println!("Average execution time: {:?}", total_duration / repeat);
-    // } else {
-    //     println!("Execution time: {:?}", total_duration);
-    // }
 
-    println!("t-Minute City: {:?}", min_city);
+    // Get the current date and time
+    let now = Local::now();
+    
+    // Format the date and time to use in the filename
+    let formatted_now = now.format("%Y%m%d_%H%M%S").to_string();
+    
+    // Create the filename with the current date and time
+    let file_name = format!("output_{}.csv", formatted_now);
+
     // Write the HashSet data to a CSV file
-    write_to_csv(&min_city, "output.csv")?;
+    write_to_csv(&min_city, &file_name)?;
 
     Ok(())
 }

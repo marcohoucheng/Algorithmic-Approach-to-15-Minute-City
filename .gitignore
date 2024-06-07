@@ -15,7 +15,9 @@ cache/
 **.lot
 **.snm
 **.nav
+analysis/
 images/
+min_city/output.csv
 min_city/data/
 min_city/target/
 min_city/Cargo.lock
