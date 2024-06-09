@@ -1,14 +1,6 @@
 \section{Dijkstra's Algorithm}
 
-Add to somewhere:
-
-Taking inspriation from the approach used by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}), the modified algorithm will use a modified graph search algorithm to find the 15-Minute City with the service locations of each type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph.
-
-\newpage
-
-The first solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
-
-Adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, which incooperate the Dijkstra's algorithm with a (Minimum) Priority Queue data structure. The data structure maintains a dynamic set $Q$ of elements, each set element in $Q$ has a key and it supports the following dynamic-set operations.
+The first solution proposed in this thesis is a modified version of Dijkstra's algorithm, adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, which incooperate the Dijkstra's algorithm with a (Minimum) Priority Queue data structure. The data structure maintains a dynamic set $Q$ of elements, each set element in $Q$ has a key and it supports the following dynamic-set operations.
 
 \begin{itemize}
     \item INSERT($Q; x; k$): inserts element $x$ with key $k$ into set $Q$.
@@ -55,7 +47,9 @@ As the 15-Minute City concept is primarily used to study cities' characteristics
     \end{algorithmic}
 \end{algorithm}
 
-The modified Dijkstra's algorithm shown above only searches for vertices within $t$ minutes from a single source node. For our context of the 15-Minute City, this needs to run for each location of each service type. The full algorithm as the solution of the problem is shown in Algorithm \ref{alg:15mc}.
+The modified Dijkstra's algorithm shown above only searches for vertices within $t$ minutes from a single source node. For our context of the 15-Minute City, this needs to run for each location of each service type. Taking inspriation from the approach used by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}), the 15-Minute City algorithm will use the modified Dijkstra's algorithm to find the 15-Minute City with the service locations of each service type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph, $\text{i.e. }S\subset V\Rightarrow|S|<|V|$.
+
+The 15-Minute City algorithm as the solution of the problem is shown in Algorithm \ref{alg:15mc}.
 
 \begin{algorithm}[H]
     \caption{15-Minute City Algorithm}\label{alg:15mc}
@@ -98,7 +92,7 @@ The time complexity of the algorithm is also affected by the data structure used
 
 As the latter two operations in the algorithm dominates the former two operations, the time complexity of algorithm \ref{alg:modified_dijsktra} is $O((|V|+|E|)\log |V|)$ if a binary heap is implemented. This can be reduced to $O(|V|\log |V|+|E|)$ if a Fibonacci heap is considered instead.
 
-For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $q$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(p\cdot q\cdot(|V|\log |V|+|E|))$ if a binary heap is implemented and $O(p\cdot q\cdot(|V|\log |V|+|E|))$ if a Fibonacci heap is implemented. In both cases, the time complexity consider the size of the entire graph, which could be arbitrarily large when a city or a large area is studied. Due to the fact that the modified dijsktra's algorithm stops once all nodes within weight $t$ are searched, it is important to note that the actual complexity of the algorithm could be potentially much smaller.
+For the complete 15-Minute City Algorithm \ref{alg:15mc}, the algorithm is run for each location of each service type. Denote $q$ as the maximum number of locations for any service type, the time complexity of the algorithm is $O(p\cdot q\cdot(|V|\log |V|+|E|))$ if a binary heap is implemented and $O(p\cdot q\cdot(|V|\log |V|+|E|))$ if a Fibonacci heap is implemented. In both cases, the time complexity consider the size of the entire graph, which could be arbitrarily large when a city or a large area is studied. Due to the fact that the modified Dijsktra's algorithm stops once all nodes within weight $t$ are searched, it is important to note that the actual complexity of the algorithm could be potentially much smaller.
 
 \begin{figure}[H]
     \centering
@@ -182,7 +176,7 @@ In this case, the city is smaller than the 15-Minute City, the algorithm will se
 
 For the space complexity of the propsed algorithm above, it is important to note that the modification algorithm of Dijkstra's algorithm inserts all $|V|$ vertices of the graph into the priority queue set $Q$, this is repeated for each service location of each type. Therefore, the space complexity would be $O(p\cdot q\cdot |V|)$. Hence the algorithm proposed may not be suitable for large graphs for space complexity.
 
-The problem described here can be solved by adapting a technique from the so-called ``Uniform Cost Search" algorithm (also known as ``Dijkstra for large graphs"). The algorithm is an extension of Best-first search, it is similar to Dijkstra's algorithm, as well as some of the modification to Dijkstra's algorithm we propsoed above. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:modified_dijsktra2}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
+The problem described here can be solved by adapting a technique from the ``Uniform Cost Search" algorithm. The algorithm is an extension of Best-first search, it is similar to Dijkstra's algorithm, as well as some of the modification to Dijkstra's algorithm we propsoed above. However, Uniform Cost Search algorithm does not insert all vertices into the priority queue. Instead, it only inserts the vertices that are reachable within the time threshold $t$. A modification of this algorithm is shown in Algorithm \ref{alg:modified_dijsktra2}. This algorithm can then be used in Algorithm \ref{alg:15mc} to replace the modified Dijkstra's algorithm in \ref{alg:modified_dijsktra}.
 
 \begin{algorithm}[H]
     \caption{Modified Dijkstra's Algorith 2} \label{alg:modified_dijsktra2}
@@ -218,7 +212,7 @@ In this implementation, the algorithm is more efficient in practice as it only i
 
 \section{Inspiration from Johnson's algorithm}
 
-Johnson's algorithm is an all-pairs shortest path algorithm to find shortest paths between every pair of nodes in a graph. It uses both Dijkstra and Bellman-Ford as subroutines and performs better than Floyd-Warshall algorithm in sparse graphs. For the goal of the 15-Minute City algorithm, the set of service vertices can be far smaller than the entire graph in size. Thus, all-pairs shortest path algorithms are not optimal solutions to the problem. However, Johnson's algorithm's approach in adjusting the weights to make all edges non-negative can be applied to the 15-Minute City problem. The algorithm works by adding a new vertex $s$ to the graph and adding edges from the new vertex to all vertices of the graph, before applying Bellman-Ford algorithm.
+Johnson's algorithm uses both Dijkstra and Bellman-Ford as subroutines and performs better than Floyd-Warshall algorithm in sparse graphs. For the goal of the 15-Minute City algorithm, the set of service vertices can be far smaller than the entire graph in size. Thus, all-pairs shortest path algorithms are not optimal solutions to the problem. However, Johnson's algorithm's approach in connecting multiple nodes with a new node and $0$ weight can be applied to the 15-Minute City problem.
 
 This approach can be applied to the 15-Minute City problem by adding a new vertex $s$ to the graph and adding edges from the new vertex to all service vertices of the same type. This allows us to eliminate the inner loop of Algorithm \ref{alg:15mc} where $\text{Modified\_Dijkstra}(G, w, s, t, i)$ is called. This alternate approach of the 15-Minute City algorithm is shown in Algorithm \ref{alg:15mc2}.
 
@@ -266,77 +260,3 @@ However, the time and space complexity of the 15-Minute City algorithm are now:
 $$O\left(p\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)\text{ and }O\left(p\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
 respectively, which are smaller by an order of $q_w$ compared to the previous algorithm.
-
-% \section{Remove duplicate search}
-
-% Although Algorithm \ref{alg:15mc2} has improved on efficiency compared to the original proposed algorithm (Algorithm \ref{alg:15mc}). There is still room for improvment for cases where more than 1 service type is located at the same vertex. In this case, the same set of nodes will be searched multiple times for each service type. The below algorithm (\ref{alg:15mc3} and \ref{alg:modified_dijsktra3}) shows a further modification to Algorithm \ref{alg:15mc2} to remove duplicate search. 
-
-% \begin{algorithm}[H]
-%     \caption{15-Minute City Algorithm 3} \label{alg:15mc3}
-%     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, a time threshold $t$ \\ \phantom{\textbf{Input:}} and a list $S$ of service vertices of $p$ types\\
-%     \textbf{Output} Set $R\subseteq V$ representing the $t$-Minute City
-%     \begin{algorithmic}
-%         \ForAll{vertex $v \in V$}
-%             \State $v.r \gets \{\mathbf{0}\}^{n}$
-%             \State $v.l \gets \{\mathbf{0}\}^{n}$
-%         \EndFor
-%         \ForAll{service $v \in S$}
-%             \State $v.l[i] \gets 1$ for each type $i$ of service $v$ contains
-%             \State $v.k \gets 0$ \Comment{Indicate whether the vertex has been searched}
-%         \EndFor
-%         \For {each service type $i\in\{1,...,n\}$}
-%             \State Create a new vertex $s$ and denote a set $S = \{v: i\in v.l \text{ and } v.k = 0\}$
-%             \State Add edges from $s$ to all vertices in $S$ and initialise $w(s,v)=0$
-%             \State $\text{Modified\_Dijkstra\_2}(G,w,s,S,t)$
-%             \State Remove $s$ and all edges connected to it
-%         \EndFor
-%         \State $R\gets\emptyset$
-%         \For {each vertex $v\in V$}
-%             \If {$v.r = \mathbf{1}$}
-%                 \State $R \gets R\cup \{v\}$
-%             \EndIf
-%         \EndFor
-%     \end{algorithmic}
-% \end{algorithm}
-
-% \begin{algorithm}[H]
-%     \caption{Modified Dijkstra's Algorith 3} \label{alg:modified_dijsktra3}
-%     \textbf{Input:} A graph $G(V,E)$, weights $w:E\rightarrow\mathbb{R}_{\geq 0}$, source vertex $s$, \\ \phantom{\textbf{Input:}} $S$ set of vertices of type $i$ and time threshold $t$\\
-%     \textbf{Output} Assign $v.r[i]=1$ for vertices that can reach to source node $s$ within threshold $t$, for each service type $i$ where $v.l[i]=1$
-%     \begin{algorithmic}
-%         \State $Q\gets\emptyset$ \Comment{Initialise an empty priority queue}
-%         % \State $R\gets\emptyset$ \Comment{Initialise a lookup table for reachable vertices}
-%         \State INSERT($Q,s$)
-%         \While {$Q\neq\emptyset$}
-%             \State $v\gets$EXTRACT-MIN$(Q)$
-%             \State $v.k\gets1$ \Comment{Mark the vertex as searched}
-%             \If {$v\notin S$}
-%                 \State $w \gets v.parent$
-%                 \State $v.l \gets w.l$
-%             \EndIf
-%             \State $I \gets v.l$ \Comment{Get the set of service types $v$ contains}
-%             \If {$v.d>t$}
-%                 \State $Q\gets\emptyset$ \Comment{Break out of While loop}
-%             \Else
-%                 \For {each service type $i\in I$}
-%                     \State $v.r[i] \gets 1$
-%                 \EndFor
-%                 \For {each vertex $u\in Adj[v]$}
-%                     \State $u.parent\gets v$
-%                     \If {$u\notin Q$}
-%                         \State $u.d\gets v.d+w(u,v)$ % Update reached[u] to v.d+w(u,v)
-%                         \State INSERT($Q,u$)
-%                     \ElsIf{$u.d>v.d+w(u,v)$}
-%                         \State $u.d\gets v.d+w(u,v)$
-%                         \State DECREASE-KEY($Q,u,u.d$)
-%                     \EndIf
-%                 \EndFor
-%             \EndIf
-%         \EndWhile
-%     \end{algorithmic}
-% \end{algorithm}
-
-% Note: The implementation represented here is not safe. See notes.
-
-% % if shared with another service, mark it as searched and search for both
-% % When search for the other service, don't search for the same node again
