@@ -1,5 +1,11 @@
 \section{Dijkstra's Algorithm}
 
+Add to somewhere:
+
+Taking inspriation from the approach used by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}), the modified algorithm will use a modified graph search algorithm to find the 15-Minute City with the service locations of each type as the source nodes, rather than searching from every vertex in the graph. This approach is expected to be more efficient as the number of service locations is expected to be far smaller than the number of vertices in the graph.
+
+\newpage
+
 The first solution proposed in this thesis is a modified version of Dijkstra's algorithm, which is a well-known algorithm for finding the shortest path between two vertices in a weighted graph. The algorithm works by selecting the node with the smallest distance from the source node and updating the distance of its neighbors. This process is repeated until all vertices have been visited. The algorithm is efficient for finding the shortest path between two vertices in a graph with non-negative edge weights. However, it is not suitable for graphs with negative edge weights.
 
 Adapting the methodogies used by Pezzica et al. \cite{cormen2022introduction}, which incooperate the Dijkstra's algorithm with a (Minimum) Priority Queue data structure. The data structure maintains a dynamic set $Q$ of elements, each set element in $Q$ has a key and it supports the following dynamic-set operations.
