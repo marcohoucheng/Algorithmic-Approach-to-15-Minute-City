@@ -4,12 +4,26 @@ With the problem statement formalised in the previous section \ref{problem_state
 
 Graph is a mathematical data structure in Graph Theory representing pairwise relationships between objects. The earliest scientiifc paper was the ``Seven Bridges of Königsberg'' by Leonhard Euler published in the $18^{th}$ centry. The ``Seven Bridges of Königsberg'' was proven to have no solution to the problem of crossing each of the seven bridges exactly once and returning to the starting point. Euler represented the problem by a graph, where the land masses were represented by vertices and the bridges were represented by edges.
 
-\begin{figure}[H]
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.6\textwidth]{Konigsberg_bridges.png}
+%     \caption{Konigsberg Bridges}
+%     \label{fig:konigsberg_bridges}
+% \end{figure}\hfill
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.6\textwidth]{Konigsberg_bridges.png}
-    \caption{Konigsberg Bridges}
+    \begin{subfigure}[c]{0.6\textwidth}
+        % \centering
+        \includegraphics[width=\textwidth]{Konigsberg_bridges.png}
+    \end{subfigure}\hfill
+    \begin{subfigure}[c]{0.4\textwidth}
+        % \centering
+        \includegraphics[width=\textwidth]{Konigsberg_bridges_graph.png}
+    \end{subfigure} \hfill
+    \caption{Konigsberg Bridges and its graph representation}
     \label{fig:konigsberg_bridges}
-\end{figure}\hfill
+\end{figure}
 
 In general, a graph can be defined as $G(V,E)$, where $V$ is the set of vertices and $E\subseteq V\times V$ is the set of edges. The edges can be directed or undirected, and weighted or unweighted. Labels can also be assigned to the vertices and edges, which can be used to represent additional information about the graph. For example, in ``Seven Bridges of Königsberg'', the vertices could be labelled with the names of the islands/areas and the edges could be labelled with the names of bridges. Furthermore, the edges could be weighted with the length of the bridges.
 
@@ -69,4 +83,4 @@ Johnson's algorithm is similar to Floyd-Warshall's algorithm that it finds the s
 
 In the last sections, we have discussed the graph data structure and the algorithms that could potentially assist in solving the 15-Minute City problem. It can be seen that the Minimum Spanning Tree problem is not directly applicable to the 15-Minute City problem, as the problem is not about connecting all the nodes in a graph with the least possible total edge weight. As for the Graph Traversal algorithms BFS and DFS, these algorithm are designed for unweighted graphs which are not enough for us to represent city maps.
 
-The All-Source-Shortest-Path algorithms such as Floyd-Warshall's algorithm and Johnson's algorithm are not suitable for the 15-Minute City problem, as it is unnecessary to find the shortest path between every pair of nodes in the graph, while 15-Minute City problem is about finding the reachable essential needs within 15 minutes from residence. This leaves us with the Single-Source-Shortest-Path algorithms such as Dijkstra's algorithm, and Bellman-Ford algorithm. While Bellman-Ford algorithm has an advantage of supporting negative edge weights, it is not useful for our problem as the edge weights in our graph have time unit and therefore, non-negative. Finally, Dijkstra's algorithm and Uniform Cost Search are the most suitable algorithms for the 15-Minute City problem. Therefore, our proposed soltuion will be based on Dijkstra's algorithm and Uniform Cost Search.
+The All-Source-Shortest-Path algorithms such as Floyd-Warshall's algorithm and Johnson's algorithm are not suitable for the 15-Minute City problem either, as it is unnecessary to find the shortest path between every pair of nodes in the graph, while 15-Minute City problem is about finding the reachable essential needs within 15 minutes from residence. This leaves us with the Single-Source-Shortest-Path algorithms such as Dijkstra's algorithm, and Bellman-Ford algorithm. While Bellman-Ford algorithm has an advantage of supporting negative edge weights, it is not useful for our problem as the edge weights in our graph use time unit and therefore, non-negative. Finally, Dijkstra's algorithm and Uniform Cost Search are the most suitable algorithms for the 15-Minute City problem. Therefore, our proposed solution will be based on Dijkstra's algorithm and Uniform Cost Search.

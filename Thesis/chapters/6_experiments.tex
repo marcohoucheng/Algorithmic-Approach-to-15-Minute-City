@@ -1,0 +1,67 @@
+In this chapter, we will discuss the implementation of our proposed algorithm in practice. Recall that we aim to solve the challenges of ``computational cost'' and ``adaptability'' \cite{lima_quest_2023} to the ``15-Minute City" problem with an algorithmic approach, it is important that the algorithm is implemented in a low-level language to promote efficiency in our experiments.
+
+\section{Implementation}
+
+Rust is a low-level programming language which has gained significant popularity in the field of Computer Science in recent years. It is a statically typed language to promote safety and concurrency. Rust achieves these goals by using a unique ownership model to manage memory allocation and deallocation at compile time, preventing common errors such as null pointer dereferencing and data races. This makes Rust an attractive choice for programming where performance and reliability are critical.
+
+In our implementation of the algorithm, we opted to build the algorithm with the minimum amount of non-official crates (packages for Rust). With this in mind, we have used the \verb|petgraph| and the \verb|ordered_float| crates: \verb|petgraph| \cite{petgraph} supports an undirected graph data structure \verb|UnGraphMap| while \verb|ordered_float::NotNan| \cite{ordered_float} is a necessary extension to the priority queue as the standard library's binary heap implementation only supports Integer ordering as according to the \verb|754-2008 - IEEE Standard for Floating-Point Arithmetic| \cite{IEEE}. It is important to note that while Fibonacci Heap has been used in our solution, we have opted to use a built in Binary Heap in our code, it is due to the fact that there is a lack of available implementation of Fibonacci Heaps in Rust.
+
+The implementation of our code takes 2 \verb|csv| files in inputs, \verb|nodes.csv| and \verb|edges.csv|. \verb|nodes.csv| contains the nodes identifier in the graph, along with a \verb|label| field for the type of the service the node contains, or it can be empty. \verb|edges.csv| contains the \verb|source|, \verb|target| and \verb|weight| for every edge in our graph. Precisely, the node identifier fields \verb|id|, \verb|source|, and \verb|target| should be represented by integers, which is \verb|u64| in Rust, where \verb|u| stands for ``unsigned''. Furthermore, \verb|label| should be a string or empty, and \verb|weight| should be of type float, or \verb|f64|. The table \ref{tab:data_type} shows a summary of the data types for each input variable.
+
+\begin{table}[htbp]
+    \begin{center}
+        \caption{Summary of input data type}
+        \label{tab:data_type}
+        \begin{tabular}{ |c|c|c| }
+            \hline
+            \textbf{Input} & \textbf{Data Type} & \textbf{Rust Type} \\
+            \hline
+            \hline
+            \verb|id| & Integer & \verb|u64| \\
+            \hline
+            \verb|source| & Integer & \verb|u64| \\
+            \hline
+            \verb|target| & Integer & \verb|u64| \\
+            \hline
+            \verb|weight| & Float & \verb|f64| \\
+            \hline
+            \verb|label| & String & \verb|String| \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\section{Data Preparation}
+
+The data preparation for the algorithm is done in Python, this is due to the flexible and well-supported nature of the programming language. In this experiment, we obtain the map data from OpenStreetMap via the OpenStreetMap API and the \verb|osmnx| library \cite{OSMnx}. As oppose to Google Maps, OpenStreetMap does not require an API key in order to download map data. The obtained map data is stored as a \verb|MultiDiGraph| object from the \verb|NetworkX| library \cite{SciPyProceedings_11}, the \verb|MultiDiGraph| object supports a directed graph and allows for multiple edges between any two nodes, this will be converted to a \verb|MultiGraph| object which represents an undirected graph and duplicated edges will be removed in the subsequent steps detailed below.
+
+The list below lays out the steps taken to obtain the map data in high-level:
+
+\begin{enumerate}
+    \item Download map data as an \verb|MultiDiGraph| object with the \verb|osmnx| library and the \verb|network_type| set as \verb|all|. Area could be selected by one of the following:
+    \begin{itemize}
+        \item City administration boundary
+        \item A bounding box of coordinates
+        \item A user-defined radius from a location given by its coordinates
+    \end{itemize}
+    \item The graph is simplified by merging nodes that are within 10 metres of each other, this eliminates having too many nodes at junctions and pedestrian areas.
+    \item The directed graph is transformed into an undirected graph.
+    \item For the selected service locations
+    \begin{itemize}
+        \item Locate the closest point of the closest edge (i.e. street) from each location.
+        \item For each location, insert a new node to the graph and replace the original edge by 2 newly inserted edges to connect the new node.
+    \end{itemize}
+    \item Remove parallel edges by only retaining the edge with the minimum weight.
+    \item Export the graph data into \verb|nodes.csv| and \verb|edges.csv|.
+\end{enumerate}
+
+
+
+% Walking Speed 1.22 m/s
+% ['supermarket', 'cafe', 'pharmacy']
+
+
+
+\section{Experiment}
+
+\section{Adaption to existing papers}
