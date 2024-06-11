@@ -4,7 +4,7 @@ In this chapter, we will discuss the implementation of our proposed algorithm in
 
 Rust is a low-level programming language which has gained significant popularity in the field of Computer Science in recent years. It is a statically typed language to promote safety and concurrency. Rust achieves these goals by using a unique ownership model to manage memory allocation and deallocation at compile time, preventing common errors such as null pointer dereferencing and data races. This makes Rust an attractive choice for programming where performance and reliability are critical.
 
-In our implementation of the algorithm, we opted to build the algorithm with the minimum amount of non-official crates (packages for Rust). With this in mind, we have used the \verb|petgraph| and the \verb|ordered_float| crates: \verb|petgraph| \cite{petgraph} supports an undirected graph data structure \verb|UnGraphMap| while \verb|ordered_float::NotNan| \cite{ordered_float} is a necessary extension to the priority queue as the standard library's binary heap implementation only supports Integer ordering as according to the \verb|754-2008 - IEEE Standard for Floating-Point Arithmetic| \cite{IEEE}. It is important to note that while Fibonacci Heap has been used in our solution, we have opted to use a built in Binary Heap in our code, it is due to the fact that there is a lack of available implementation of Fibonacci Heaps in Rust.
+In our implementation of the algorithm, we opted to build the algorithm with the minimum amount of non-official crates (packages for Rust). With this in mind, we have used the \verb|petgraph| and the \verb|ordered_float| crates: \verb|petgraph| \cite{petgraph} supports an undirected graph data structure \verb|UnGraphMap| while \verb|ordered_float::NotNan| \cite{ordered_float} is a necessary extension to the priority queue as the standard library's Binary Heap implementation only supports Integer ordering as according to \verb|754-2008 - IEEE Standard for Floating-Point Arithmetic| \cite{IEEE}. It is important to note that while Fibonacci Heap has been used in our solution, we have opted to use a built in Binary Heap in our code, it is due to the fact that there is a lack of available implementation of Fibonacci Heaps in Rust.
 
 The implementation of our code takes 2 \verb|csv| files in inputs, \verb|nodes.csv| and \verb|edges.csv|. \verb|nodes.csv| contains the nodes identifier in the graph, along with a \verb|label| field for the type of the service the node contains, or it can be empty. \verb|edges.csv| contains the \verb|source|, \verb|target| and \verb|weight| for every edge in our graph. Precisely, the node identifier fields \verb|id|, \verb|source|, and \verb|target| should be represented by integers, which is \verb|u64| in Rust, where \verb|u| stands for ``unsigned''. Furthermore, \verb|label| should be a string or empty, and \verb|weight| should be of type float, or \verb|f64|. The table \ref{tab:data_type} shows a summary of the data types for each input variable.
 
@@ -12,7 +12,7 @@ The implementation of our code takes 2 \verb|csv| files in inputs, \verb|nodes.c
     \begin{center}
         \caption{Summary of input data type}
         \label{tab:data_type}
-        \begin{tabular}{ |c|c|c| }
+        \begin{tabular}{ ccc }
             \hline
             \textbf{Input} & \textbf{Data Type} & \textbf{Rust Type} \\
             \hline
@@ -31,7 +31,9 @@ The implementation of our code takes 2 \verb|csv| files in inputs, \verb|nodes.c
     \end{center}
 \end{table}
 
-\section{Data Preparation}
+The algorithm is implemented in Rust as a single thread application. In practice, it would be vise to parallelise the algorithm to take advantage of the concurrency ability of Rust to utilise the multi-core processors in modern computers.
+
+\section{Data Preparation} \label{data_preparation}
 
 The data preparation for the algorithm is done in Python, this is due to the flexible and well-supported nature of the programming language. In this experiment, we obtain the map data from OpenStreetMap via the OpenStreetMap API and the \verb|osmnx| library \cite{OSMnx}. As oppose to Google Maps, OpenStreetMap does not require an API key in order to download map data. The obtained map data is stored as a \verb|MultiDiGraph| object from the \verb|NetworkX| library \cite{SciPyProceedings_11}, the \verb|MultiDiGraph| object supports a directed graph and allows for multiple edges between any two nodes, this will be converted to a \verb|MultiGraph| object which represents an undirected graph and duplicated edges will be removed in the subsequent steps detailed below.
 
@@ -55,13 +57,110 @@ The list below lays out the steps taken to obtain the map data in high-level:
     \item Export the graph data into \verb|nodes.csv| and \verb|edges.csv|.
 \end{enumerate}
 
-
-
-% Walking Speed 1.22 m/s
-% ['supermarket', 'cafe', 'pharmacy']
-
-
+\textbf{Show visualisation of how nodes are inserted}
 
 \section{Experiment}
 
+The experiments in this thesis are conducted on a MacBook Pro with a M1 Pro SoC, which is an ARM-based processor. The machine has 8 CPU cores and 16GB of RAM. The operating system is macOS Sonoma 14.5. The Rust compiler version is 1.78.0. The Python version is 3.12.0. The versions of the Python libraries and Rust crates used are as follows:
+
+\textbf{Update these}
+
+Rust crates:
+\begin{itemize}
+    \item \verb|osmnx|: 1.1.1
+    \item \verb|networkx|: 2.7.3
+    \item \verb|petgraph|: 0.6.0
+    \item \verb|ordered_float|: 1.0.2
+\end{itemize}
+
+
+Python libraries:
+\begin{itemize}
+    \item \verb|osmnx|: 1.1.1
+    \item \verb|networkx|: 2.7.3
+    \item \verb|petgraph|: 0.6.0
+    \item \verb|ordered_float|: 1.0.2
+\end{itemize}
+
+According to Browning et al. \cite{browning_effects_2006}, the average walking speed is 1.42 m/s, while Murtagh et al. \cite{murtagh_outdoor_2021} concluded that it is 1.31 m/s. There are many other scientific studies on average walking speed for the general population, as well as for specific groups such as the elderly, children, and people with disabilities. In our experiments, we will use the average walking speed of 1.22 m/s, which is slower than the the average walking speeds concluded from the 2 studies. However, this is a conservative estimate to account for a wider range of the population and also the fact that people may walk slower in urban areas due to congestion, obstacles, and other factors. The walking speed of 1.22 m/s was also used in the experiments by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}). This will allow us to compare our results with theirs in the later section.
+
+Similarly, we will select 3 types of ammenities to include in our experiment, these are supermarkets, cafe and pharmacies. In OpenStreetMap, these are represented by the following tags:
+
+\begin{itemize}
+    \item Supermarket: \verb|shop=supermarket| or \verb|shop=convenience|
+    \item Cafe: \verb|amenity=cafe| or \verb|amenity=bar| (for Italian cities)
+    \item Pharmacy: \verb|amenity=pharmacy|
+\end{itemize}
+
+Most bars in Italy also serve coffee, so we will include them in the cafe category.
+
+\subsection{Padua, Italy}
+
+For the first experiment of the thesis, the ``15-Minute City'' of Padua is computed, where the University of Padua is located and where this thesis was conducted. The city of Padua is located in the Veneto region in Northern Italy, and it is the capital of the province of Padua. The city has a population of approximately 210,000 people.
+
+The map data of Padua is obtained from OpenStreetMap using the \verb|osmnx| library in Python with the administration border of Padua. The map data has been processed and transformed into a graph data structure as we have mentioned in Section \ref{data_preparation}. In this graph, there are 12535 nodes and 18706 edges, which given an average degree of
+
+$$2\times\frac{|E|}{|V|}=2\times\frac{|18706|}{|12535|}\simeq2.9846$$
+
+According to the data from OpenStreetMap, the city of Padua has 110 supermarkets, 316 cafes, and 70 pharmacies. Therefore, in our ``15-Minute City'' algorithm, it creates a new node for each service type, and they are connected to 110, 316, and 70 nodes in the graph, respectively. Note that these nodes may not be mutually exclusive, as it is possible for a node to be labelled with multiple service types.
+
+Based on the data from OpenStreetMap, the vast majority of the historic city centre, as well as the area of Arcella of Padua is within a 15-minute walk of a supermarket, cafe, or pharmacy. This is consistent with the idea of the ``15-Minute City'' where essential services are within walking distance of most residents. The results of the algorithm can be visualised and it is shown in figure \ref{fig:padua_15MC}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Padua_15MC.png}
+    \caption{15-Minute City of Padua, Italy. Black edges represents the 15-Minute City.}
+    \label{fig:padua_15MC}
+\end{figure}
+
+
+To measure the running time, we can run the algorithm repeatedly for 10000 iterations and take the average running time. The first 10 runs of the algorithm are excluded from the average to account for the warm-up time of the CPU. The average running time of the algorithm is \textbf{0.5} seconds.
+
+\begin{table}[htbp]
+    \begin{center}
+        \caption{Padua t-Minute City}
+        \label{tab:padua_tMC}
+        \begin{tabular}{ccccc}
+            \hline
+            \textbf{$t$} & \textbf{Number of Nodes} & & \textbf{$t$} & \textbf{Number of Nodes} \\
+            \hline
+            \textbf{1} & 77 & & \textbf{16} & 8789 \\
+            \textbf{2} & 310 & & \textbf{17} & 9123 \\
+            \textbf{3} & 689 & & \textbf{18} & 9403 \\
+            \textbf{4} & 1260 & & \textbf{19} & 9653 \\
+            \textbf{5} & 1941 & & \textbf{20} & 9894 \\
+            \textbf{6} & 2731 & & \textbf{21} & 10106 \\
+            \textbf{7} & 3649 & & \textbf{22} & 10320 \\
+            \textbf{8} & 4488 & & \textbf{23} & 10505 \\
+            \textbf{9} & 5232 & & \textbf{24} & 10667 \\
+            \textbf{10} & 5887 & & \textbf{25} & 10873 \\
+            \textbf{11} & 6477 & & \textbf{26} & 11055 \\
+            \textbf{12} & 7021 & & \textbf{27} & 11242 \\
+            \textbf{13} & 7536 & & \textbf{28} & 11404 \\
+            \textbf{14} & 8043 & & \textbf{29} & 11509 \\
+            \textbf{15} & 8433 & & \textbf{30} & 11595 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+As discssed in Chapter \ref{intro}, ``15-Minute City'' is an urban city planning concept which we have seen many variations of in literature. This includes the study of 10, 20 and 30 minute cities. Therefore, we can run our algorithm multiple times to create a heatmap of the city of Padua for 1 to 30 minute cities. In summary, the number of nodes in the 1 to 30 minute cities can be seen in table \ref{tab:padua_tMC} and the heatmap of the $t$-Minute City of Padua can be seen in figure \ref{fig:padua_tMC}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Padua_tMC.png}
+    \caption{t-Minute City heatmap of Padua, Italy. Darker edges represnts a smaller $t$ value.}
+    \label{fig:padua_tMC}
+\end{figure}
+
 \section{Adaption to existing papers}
+
+In this section, we will compare our results with the results of the papers by Barbieri et al. \cite{barbieri_graph_2023}, caselli_exploring_2022 olivari_are_2023
+
+% Caselli - Parma
+% Olivari - Ferrara, Bologna
+
+% Problems
+% - Data qiality
+% - Padua 15MC ignore car dependent or not
+% - Algorithm supports multiple minutes
