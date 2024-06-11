@@ -84,7 +84,7 @@ Python libraries:
 
 According to Browning et al. \cite{browning_effects_2006}, the average walking speed is 1.42 m/s, while Murtagh et al. \cite{murtagh_outdoor_2021} concluded that it is 1.31 m/s. There are many other scientific studies on average walking speed for the general population, as well as for specific groups such as the elderly, children, and people with disabilities. In our experiments, we will use the average walking speed of 1.22 m/s, which is slower than the the average walking speeds concluded from the 2 studies. However, this is a conservative estimate to account for a wider range of the population and also the fact that people may walk slower in urban areas due to congestion, obstacles, and other factors. The walking speed of 1.22 m/s was also used in the experiments by Barbieri et al. (\cite{barbieri_graph_2023}, \ref{barbieri_graph_2023}). This will allow us to compare our results with theirs in the later section.
 
-Similarly, we will select 3 types of ammenities to include in our experiment, these are supermarkets, cafe and pharmacies. In OpenStreetMap, these are represented by the following tags:
+Similarly, we will follow Barbieri et al.'s suggestion to include 3 types of ammenities to include in our experiment, these are supermarkets, post office and pharmacies. In addiction, we will include coffee shop. In OpenStreetMap, these are represented by the following tags:
 
 \begin{itemize}
     \item Supermarket: \verb|shop=supermarket| or \verb|shop=convenience|
@@ -155,10 +155,30 @@ As discssed in Chapter \ref{intro}, ``15-Minute City'' is an urban city planning
 
 \section{Adaption to existing papers}
 
-In this section, we will compare our results with the results of the papers by Barbieri et al. \cite{barbieri_graph_2023}, caselli_exploring_2022 olivari_are_2023
+In this section, we will apply our algorithm and compare with the results of the papers by Barbieri et al. in the cities of Rome, London and Paris \cite{barbieri_graph_2023}, Caselli et al. in the city of Parma, Italy \cite{caselli_exploring_2022} and Olivari et al. in the cities of Ferrara and Bologna of Italy \cite{olivari_are_2023}. We will discuss the usefulness of our algorithms, the similarities and differences between our results and theirs.
 
-% Caselli - Parma
-% Olivari - Ferrara, Bologna
+\subsection{Rome, London and Paris}
+
+Noted by Barbieri et al. \cite{barbieri_graph_2023}, the planar graph of Rome, London and Paris were obtained from OpenStreetMap using the \verb|osmnx| library in Python. In the paper, the authors have defined 1.22 m/s as the average walking speed, which is the same as our experiment and slower than the average walking speed to be more inclusive to the population. The authors chose pharmacies, post office and supermarkets as the selected ammenities as the \say{three primary needs of food, health, and administration}. Bounding boxes of the 3 cities are also provided in the paper. However, the authors have not provided the \verb|network_type| parameter in the \verb|osmnx| library, which is important to obtain the correct map data. Furthermore, the authors have not mentioned any preprocessing steps to the map data, we also found that the bounding boxes provided in the paper are not accurate, as the bounding box of Paris did not provide the same area of the city as the figure shown in the paper.
+
+Trying to recreate as close as possible to the map data used by the authors, figures \ref{fig:rome_15MC}, \ref{fig:london_15MC}, \ref{fig:paris_15MC} shows the comparison of the 15-Minute City of Rome, London and Paris, respectively, between our implementation and the results provided by Barbieri et al.
+
+\textbf{Include figures}
+
+\subsection{Parma, Italy}
+
+% Caselli et al. \cite{caselli_exploring_2022}
+
+% northern portion of the Cittadella district 3 km/h
+% delay factor
+
+\subsection{Ferrara and Bologna, Italy}
+
+% Olivari et al. \cite{olivari_are_2023}
+
+% walk network with pandana 5km/h
+
+% The final list of eight categories of services included in the NEXI (commerce and retail, education, entertainment, grocery shops, healthcare, post/bank offices, public parks, restaurants) is mainly inspired by the Walk Score methodology (Walk Score, 2011)
 
 % Problems
 % - Data qiality
