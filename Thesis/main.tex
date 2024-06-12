@@ -1,7 +1,7 @@
 \documentclass[oneside]{book}
 \usepackage[a4paper,top=3cm,bottom=3cm,left=3.5cm,right=3.5cm,marginparwidth=1.75cm]{geometry}
 \usepackage{graphicx} % Required for inserting images
-\graphicspath{{images/}}
+\graphicspath{{figures/}}
 \usepackage{subcaption}
 \usepackage{hyperref}
 \usepackage{amsmath}
@@ -30,7 +30,7 @@
 
 \usepackage{lipsum}
 
-%   Reduce the margin of the summary:
+% Reduce the margin of the summary:
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist
 
@@ -55,54 +55,38 @@
 \newpage
 
 \tableofcontents
-% \listoffigures
+\listoffigures
 \listoftables
 \listofalgorithms
 \newpage
 
-\chapter{Introduction}
-
-\import{chapters/}{1_intro} \label{intro}
+\import{chapters/}{1_intro}
 
 \newpage
-
-\chapter{Review of literature} \label{review}
 
 \import{chapters/}{2_review}
 
 \newpage
 
-\chapter{Problem Statement} \label{problem_statement}
-
 \import{chapters/}{3_problem_statement}
 
 \newpage
-
-\chapter{Graphs and Algorithms} \label{algorithms}
 
 \import{chapters/}{4_algorithms}
 
 \newpage
 
-\chapter{Proposed Solutions} \label{proposed_solution}
-
 \import{chapters/}{5_proposed_solution}
 
 \newpage
-
-\chapter{Implementation \& Experiments} \label{experiments}
 
 \import{chapters/}{6_experiments}
 
 \newpage
 
-\chapter{Discussion} \label{discussion}
-
 \import{chapters/}{7_discussion}
 
 \newpage
-
-\chapter{Conclusion} \label{conclusion}
 
 \import{chapters/}{8_conclusion}
 

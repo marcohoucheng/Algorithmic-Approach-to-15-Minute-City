@@ -1,3 +1,5 @@
+\chapter{Implementation \& Experiments} \label{experiments}
+
 In this chapter, we will discuss the implementation of our proposed algorithm in practice. Recall that we aim to solve the challenges of ``computational cost'' and ``adaptability'' \cite{lima_quest_2023} to the ``15-Minute City" problem with an algorithmic approach, it is important that the algorithm is implemented in a low-level language to promote efficiency in our experiments.
 
 \section{Implementation}
@@ -96,9 +98,7 @@ Most bars in Italy also serve coffee, so we will include them in the cafe catego
 
 \subsection{Padua, Italy}
 
-For the first experiment of the thesis, the ``15-Minute City'' of Padua is computed, where the University of Padua is located and where this thesis was conducted. The city of Padua is located in the Veneto region in Northern Italy, and it is the capital of the province of Padua. The city has a population of approximately 210,000 people.
-
-The map data of Padua is obtained from OpenStreetMap using the \verb|osmnx| library in Python with the administration border of Padua. The map data has been processed and transformed into a graph data structure as we have mentioned in Section \ref{data_preparation}. In this graph, there are 12535 nodes and 18706 edges, which given an average degree of
+For the first experiment of the thesis, the ``15-Minute City'' of Padua is computed, where the University of Padua is located and where this thesis was conducted. The city of Padua is located in the Veneto region in Northern Italy, and it is the capital of the province of Padua. The map data of Padua is obtained from OpenStreetMap using the \verb|osmnx| library in Python with the administration border of Padua. The map data has been processed and transformed into a graph data structure as we have mentioned in Section \ref{data_preparation}. In this graph, there are 12535 nodes and 18706 edges, which given an average degree of
 
 $$2\times\frac{|E|}{|V|}=2\times\frac{|18706|}{|12535|}\simeq2.9846$$
 
@@ -113,7 +113,7 @@ Based on the data from OpenStreetMap, the vast majority of the historic city cen
     \label{fig:padua_15MC}
 \end{figure}
 
-To measure the running time, we can run the algorithm repeatedly for 10000 iterations and take the average running time. The first 10 runs of the algorithm are excluded from the average to account for the warm-up time of the CPU. The average running time of the algorithm is \textbf{0.5} seconds.
+To measure the running time, we can run the algorithm repeatedly for 10000 iterations and take the average running time. The first 10 runs of the algorithm are excluded from the average to account for the warm-up time of the CPU. The average running time of the algorithm for the ``15-Minute City'' is \textbf{0.5} seconds.
 
 \begin{table}[htbp]
     \begin{center}
@@ -145,6 +145,8 @@ To measure the running time, we can run the algorithm repeatedly for 10000 itera
 
 As discssed in Chapter \ref{intro}, ``15-Minute City'' is an urban city planning concept which we have seen many variations of in literature. This includes the study of 10, 20 and 30 minute cities. Therefore, we can run our algorithm multiple times to create a heatmap of the city of Padua for 1 to 30 minute cities. In summary, the number of nodes in the 1 to 30 minute cities can be seen in table \ref{tab:padua_tMC} and the heatmap of the $t$-Minute City of Padua can be seen in figure \ref{fig:padua_tMC}.
 
+\textbf{Include average running time for each $t$}
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{Padua_tMC.png}
@@ -164,9 +166,9 @@ Trying to recreate as close as possible to the map data used by the authors, fig
 
 \textbf{Include figures}
 
-\subsection{Parma, Italy}
+\subsection{Parma, Italy} \label{parma}
 
-Caselli et al. studied the 15-Minute City for the northern portion of the Cittadella district, Parma, Italy \cite{caselli_exploring_2022}. In the paper, the authors used a ArcGIS software with a GIS-model which improved and integrated a Territorial Information system. A walking speed of 3 km/h was used, which is equivalent to 0.83 m/s, the authors noted that this is due to a recommendation by the National Research Council (2000) \say{in urban areas with large numbers of older pedestrians}. A delay factor is also used in their model where the model adds 20 seconds to unsignalised crossings and 40 seconds to signalised crossings. In our propsed model, the input graph does not deal with weighted nodes. However, since our model is based on the Dijkstra's algorithm, weighted nodes can be easily incorporated into the model. The models used in this paper defined ``neighbour cores'' as \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery
+Caselli et al. studied the 15-Minute City for the northern portion of the Cittadella district, Parma, Italy \cite{caselli_exploring_2022}. In the paper, the authors used a ArcGIS software with a GIS-model which improved and integrated a Territorial Information system. A walking speed of 3 km/h was used, which is equivalent to 0.83 m/s, the authors noted that this is due to a recommendation by the National Research Council (2000) \say{in urban areas with large numbers of older pedestrians}. A delay factor is also used in their model where the model adds 20 seconds to unsignalised crossings and 40 seconds to signalised crossings. This can be incorporated into our algorithm by adding the delay factor to the edge weights of the graph for crossings. The models used in this paper defined ``neighbour cores'' as \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery
 stores, bars, drugstores, and banks.} The ``15-Minute City'' is defined as the area where the ``neighbour cores'' are within 15 minutes of walking distance, the paper also separated the 16-Minute City into ``$0 - 5$ minutes'', ``$5 - 10$ minutes'' and ``$10 - 15$ minutes'' regions.
 
 Since the authors did not include the coordinates of the ``neighbour cores'', nor the methodology used to obtain them. We will try to recreate the 15-Minute City of this area by simplily using the service types mentioned by the authors in our algorithm, along with the walking speed of 0.83 m/s. For the sake of simplisity, we will not include the delay factor in our model. Following our approach used in Section \ref{padua}, we will compute a heatamp of the 15-Minute City of the northern portion of the Cittadella district, Parma, Italy. The results of our implementation against Caselli et al. can be seen in figure \ref{fig:parma_tMC}.
@@ -199,7 +201,7 @@ We have studied in Chapter \ref{proposed_solution} that the theorical complexity
 
 $$\mathcal{O}\left(p\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)\text{ and }O\left(p\cdot d^{1+\floor*{t/\epsilon}}\right)$$
 
-In the table \ref{tab:complexity}, we have summarised the complexity of the algorithm for the cities of Padua, Rome, London, Paris, Parma, Ferrara and Bologna, along with the number of nodes and edges in each graph.
+In the table \ref{tab:complexity}, we have summarised the complexity of the algorithm for the ``15-Minute City'' of Padua, Rome, London, Paris, Parma, Ferrara and Bologna, along with the number of nodes and edges in each graph.
 
 \begin{table}[htbp]
     \begin{center}
@@ -220,3 +222,5 @@ In the table \ref{tab:complexity}, we have summarised the complexity of the algo
         \end{tabular}
     \end{center}
 \end{table}
+
+\textbf{Also measure different $t$?}
