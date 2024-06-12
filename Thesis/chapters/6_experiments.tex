@@ -59,7 +59,7 @@ The list below lays out the steps taken to obtain the map data in high-level:
 
 \textbf{Show visualisation of how nodes are inserted}
 
-\section{Experiment}
+\section{Experiment} \label{padua}
 
 The experiments in this thesis are conducted on a MacBook Pro with a M1 Pro SoC, which is an ARM-based processor. The machine has 8 CPU cores and 16GB of RAM. The operating system is macOS Sonoma 14.5. The Rust compiler version is 1.78.0. The Python version is 3.12.0. The versions of the Python libraries and Rust crates used are as follows:
 
@@ -112,7 +112,6 @@ Based on the data from OpenStreetMap, the vast majority of the historic city cen
     \caption{15-Minute City of Padua, Italy. Black edges represents the 15-Minute City.}
     \label{fig:padua_15MC}
 \end{figure}
-
 
 To measure the running time, we can run the algorithm repeatedly for 10000 iterations and take the average running time. The first 10 runs of the algorithm are excluded from the average to account for the warm-up time of the CPU. The average running time of the algorithm is \textbf{0.5} seconds.
 
@@ -167,20 +166,57 @@ Trying to recreate as close as possible to the map data used by the authors, fig
 
 \subsection{Parma, Italy}
 
-% Caselli et al. \cite{caselli_exploring_2022}
+Caselli et al. studied the 15-Minute City for the northern portion of the Cittadella district, Parma, Italy \cite{caselli_exploring_2022}. In the paper, the authors used a ArcGIS software with a GIS-model which improved and integrated a Territorial Information system. A walking speed of 3 km/h was used, which is equivalent to 0.83 m/s, the authors noted that this is due to a recommendation by the National Research Council (2000) \say{in urban areas with large numbers of older pedestrians}. A delay factor is also used in their model where the model adds 20 seconds to unsignalised crossings and 40 seconds to signalised crossings. In our propsed model, the input graph does not deal with weighted nodes. However, since our model is based on the Dijkstra's algorithm, weighted nodes can be easily incorporated into the model. The models used in this paper defined ``neighbour cores'' as \say{urban nodes well served by necessities shops and services, such as supermarkets, grocery
+stores, bars, drugstores, and banks.} The ``15-Minute City'' is defined as the area where the ``neighbour cores'' are within 15 minutes of walking distance, the paper also separated the 16-Minute City into ``$0 - 5$ minutes'', ``$5 - 10$ minutes'' and ``$10 - 15$ minutes'' regions.
 
-% northern portion of the Cittadella district 3 km/h
-% delay factor
+Since the authors did not include the coordinates of the ``neighbour cores'', nor the methodology used to obtain them. We will try to recreate the 15-Minute City of this area by simplily using the service types mentioned by the authors in our algorithm, along with the walking speed of 0.83 m/s. For the sake of simplisity, we will not include the delay factor in our model. Following our approach used in Section \ref{padua}, we will compute a heatamp of the 15-Minute City of the northern portion of the Cittadella district, Parma, Italy. The results of our implementation against Caselli et al. can be seen in figure \ref{fig:parma_tMC}.
+
+\textbf{Include figures}
 
 \subsection{Ferrara and Bologna, Italy}
 
-% Olivari et al. \cite{olivari_are_2023}
+In the paper by Olivari et al. \cite{olivari_are_2023}, the authors defined the ``Next Proximity Index'' and proposed the questions of whether the cities of Ferrara and Bologna, Italy are ``15-Minute''. Although the ``15-Minute City'' approach here is Grid Tessaletion based, the first ``Next Proximity Index'', NEXI-Minute for each service type is calculated by the time taken to reach to the clsoest service of the type, averaged from all nodes within the grid area. While the other two NEXI indices are built on top of the first index. Therefore, our algorithm can be used to aid with calculating the time taken to travel from each node to each service type. In this paper, the authors opted to use a walking speed of 5 km/h (1.39 m/s) without giving any specific reasons, and they have selected the following list of service types which are \say{mainly inspired by the Walk Score methodology} \cite{walkscore}.
 
-% walk network with pandana 5km/h
+\begin{enumerate}
+    \item Commerce
+    \item Retail
+    \item Education
+    \item Entertainment
+    \item Grocery
+    \item Healthcare
+    \item Post/bank offices
+    \item Public parks
+    \item Restaurants
+\end{enumerate}
 
-% The final list of eight categories of services included in the NEXI (commerce and retail, education, entertainment, grocery shops, healthcare, post/bank offices, public parks, restaurants) is mainly inspired by the Walk Score methodology (Walk Score, 2011)
+Olivari et al. obtained the map data of Ferrara and Bologna from OpenStreetMap using the \verb|pandana| library in Python and with the \verb|network_type| as \verb|walk|. The authors provided a map visualising the averaged NEXI-Minute index over all service types of Ferrara. However, a specific OpenStreetMap tags for the service types were not provided. We will try to recreate the 15-Minute City of Ferrara and Bologna by using the service types mentioned by the authors in our algorithm, along with the walking speed of 1.39 m/s. The results of our implementation against Olivari et al. for the city of Ferrara can be seen in figure \ref{fig:ferrara_tMC} and figure \ref{fig:bologna_tMC} also shows our implementation of the city of Bologna.
 
-% Problems
-% - Data qiality
-% - Padua 15MC ignore car dependent or not
-% - Algorithm supports multiple minutes
+\textbf{Include figures}
+
+\section{Summary of complexity}
+
+We have studied in Chapter \ref{proposed_solution} that the theorical complexity of our ``15-Minute City'' algorithm is
+
+$$\mathcal{O}\left(p\cdot d^{1+\floor*{t/\epsilon}}\log d^{1+\floor*{t/\epsilon}}\right)\text{ and }O\left(p\cdot d^{1+\floor*{t/\epsilon}}\right)$$
+
+In the table \ref{tab:complexity}, we have summarised the complexity of the algorithm for the cities of Padua, Rome, London, Paris, Parma, Ferrara and Bologna, along with the number of nodes and edges in each graph.
+
+\begin{table}[htbp]
+    \begin{center}
+        \caption{Complexity in practice}
+        \label{tab:complexity}
+        \begin{tabular}{c|cccc}
+            \hline
+             & \textbf{|N|} & \textbf{|E|} & \textbf{Complexity} \\
+            \hline
+            \textbf{Padua} & 12535 & 18706 & 3 \\
+            \textbf{Rome} & 12535 & 18706 & 3 \\
+            \textbf{London} & 12535 & 18706 & 3 \\
+            \textbf{Paris} & 12535 & 18706 & 3 \\
+            \textbf{Parma} & 12535 & 18706 & 3 \\
+            \textbf{Ferrara} & 12535 & 18706 & 3 \\
+            \textbf{Bologna} & 12535 & 18706 & 3 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
