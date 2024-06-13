@@ -15,8 +15,10 @@ cache/
 **.lot
 **.snm
 **.nav
+archive/
 analysis/
-/images/
+images/
+test cases/data/
 min_city/output.csv
 min_city/data/
 min_city/target/
