@@ -19,7 +19,8 @@ archive/
 analysis/
 images/
 test cases/data/
-min_city/output.csv
+test cases/Images from papers/
 min_city/data/
+min_city/output.csv
 min_city/target/
 min_city/Cargo.lock

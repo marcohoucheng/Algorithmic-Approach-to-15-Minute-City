@@ -8,10 +8,9 @@
 // Return nodes where visited array is all true
 
 use csv::Reader;
-// use csv::Writer;
 use std::time::{Instant, Duration};
-use std::io::{self, Write};
-use std::fs::File;
+// use std::io::{self, Write};
+// use std::fs::File;
 use std::error::Error;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
@@ -21,7 +20,7 @@ use serde::Deserialize;
 use petgraph::graphmap::UnGraphMap;
 use ordered_float::NotNan;
 use std::env;
-use chrono::Local;
+// use chrono::Local;
 
 // https://docs.rs/petgraph/latest/petgraph/
 // https://docs.rs/priority-queue/latest/priority_queue/
@@ -138,32 +137,18 @@ fn create_graph(edges: Vec<Edge>, nodes: Vec<Node>, unique_services: &HashSet<St
     (graph, node_vecs)
 }
 
-// fn write_to_csv(hashset: &HashSet<u64>, file_path: &str) -> Result<(), Box<dyn Error>> {
-//     // Create a writer to write to a file
-//     let mut writer = Writer::from_writer(File::create(file_path)?);
+// fn write_to_csv(min_city: &HashSet<u64>, filename: &str) -> io::Result<()> {
+//     // Create a comma-separated string from the HashSet elements
+//     let csv_line = min_city.iter().map(|item| item.to_string()).collect::<Vec<_>>().join(",");
 
-//     // Iterate over the HashSet and serialize each item
-//     for record in hashset {
-//         writer.serialize(record)?;
-//     }
+//     // Open the file for writing
+//     let mut file = File::create(filename)?;
 
-//     // Flush the writer to ensure all data is written to the file
-//     writer.flush()?;
+//     // Write the CSV line to the file
+//     file.write_all(csv_line.as_bytes())?;
+
 //     Ok(())
 // }
-
-fn write_to_csv(min_city: &HashSet<u64>, filename: &str) -> io::Result<()> {
-    // Create a comma-separated string from the HashSet elements
-    let csv_line = min_city.iter().map(|item| item.to_string()).collect::<Vec<_>>().join(",");
-
-    // Open the file for writing
-    let mut file = File::create(filename)?;
-
-    // Write the CSV line to the file
-    file.write_all(csv_line.as_bytes())?;
-
-    Ok(())
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     env::set_var("RUST_BACKTRACE", "1");
@@ -195,29 +180,34 @@ fn main() -> Result<(), Box<dyn Error>> {
         1
     };
 
-    let edges = read_edges_from_csv("./data/edges.csv")?;
-    let (nodes, unique_labels, max_id) = read_nodes_from_csv("./data/nodes.csv")?;
+    let edges = read_edges_from_csv("./min_city/data/edges.csv")?;
+    let (nodes, unique_labels, max_id) = read_nodes_from_csv("./min_city/data/nodes.csv")?;
     let (mut graph, nodes_data_orginial) = create_graph(edges, nodes, &unique_labels);
 
     let mut total_duration = Duration::new(0, 0);
-    
+
+    let threshold = if repeat == 1 {
+        0
+    } else if repeat / 10 > 10 {
+        10
+    } else {
+        repeat / 10
+    };
+
     let mut min_city: HashSet<u64> = HashSet::new();
 
     let p = unique_labels.len();
 
-    println!("Number of unique service types: {:?}", p);
-    println!("Number of nodes: {:?}", graph.node_count());
-    println!("Number of edges: {:?}", graph.edge_count());
-
-    for _ in 0..repeat {
+    for i in 0..repeat {
 
         let mut nodes_data = nodes_data_orginial.clone();
+        min_city.clear();
 
         let start_time = Instant::now(); // Start the timer
 
         let mut current_max_id: u64 = max_id;
 
-        for i in 0..(p){
+        for idx in 0..(p){
             // Create a new node with an ID greater than the current maximum
             current_max_id += 1;
             let new_node_id = current_max_id;
@@ -231,7 +221,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let label_vector = &node_data.label;
 
                 // Check if the label vector matches the current label
-                if label_vector[i] == 1 {
+                if label_vector[idx] == 1 {
                     service_locations.insert(*id);
                 }
             }
@@ -241,12 +231,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
             
             // Search from each of these nodes with Dijkstra's algorithm and stops when w > 15 minutes
-            dijkstra(&graph, &mut nodes_data, new_node_id, t, i);
+            dijkstra(&graph, &mut nodes_data, new_node_id, t, idx);
             // Remove the new node from the graph
             graph.remove_node(new_node_id);
         }
 
-        min_city.clear();
         for (id, node_data) in nodes_data {
             let reach_vector = &node_data.reach;
             if reach_vector.iter().sum::<usize>() == p {
@@ -255,34 +244,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
 
         let end_time = Instant::now();
-        let duration = end_time - start_time;
 
-        total_duration += duration;
+        if i >= threshold {
+            total_duration += end_time - start_time;
+        }
 
     }
 
+    let t_int = t.trunc() as i64;
 
-    let excluded_iterations = if repeat * 5 / 100 > 10 { 10 } else { repeat * 5 / 100 };
-    let adjusted_repeat = repeat - excluded_iterations;
-    let adjusted_total_duration = total_duration - (total_duration / repeat * excluded_iterations);
-
-    if adjusted_repeat > 1 {
-        println!("Average execution time excluding the first {} iterations: {:?}", excluded_iterations, adjusted_total_duration / adjusted_repeat);
+    if repeat > 1{
+        println!("Average execution time over {:?} iterations for {:?}-MC: {:?}", repeat - threshold, t_int, total_duration / (repeat - threshold));
     } else {
-        println!("Execution time: {:?}", total_duration);
+        println!("Execution time for {:?}-MC: {:?}", t_int, total_duration);
     }
 
-    // Get the current date and time
-    let now = Local::now();
+    // // Get the current date and time
+    // let now = Local::now();
     
-    // Format the date and time to use in the filename
-    let formatted_now = now.format("%Y%m%d_%H%M%S").to_string();
+    // // Format the date and time to use in the filename
+    // let formatted_now = now.format("%Y%m%d_%H%M%S").to_string();
     
-    // Create the filename with the current date and time
-    let file_name = format!("output_{}.csv", formatted_now);
+    // // Create the filename with the current date and time
+    // let file_name = format!("output_{}.csv", formatted_now);
 
-    // Write the HashSet data to a CSV file
-    write_to_csv(&min_city, &file_name)?;
+    // // Write the HashSet data to a CSV file
+    // write_to_csv(&min_city, &file_name)?;
 
     Ok(())
 }

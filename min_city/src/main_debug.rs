@@ -63,6 +63,12 @@ fn dijkstra(graph: &UnGraphMap<u64, f64>, nodes_data: &mut HashMap<u64, NodeData
             }
             node_data.reach[i] = 1;
         }
+        
+        let mut neighbours = Vec::new();
+        for edge in graph.edges(node) {
+            neighbours.push(edge.1);
+        }
+        println!("Neighbors: {}", neighbours.iter().map(|i| i.to_string()).collect::<Vec<_>>().join(", "));
 
         for edge in graph.edges(node) {
             let neighbor = edge.1;
