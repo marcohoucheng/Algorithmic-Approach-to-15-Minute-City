@@ -21,7 +21,12 @@ The algorithm has been tested on Rust version 1.79.
 
 ## Examples
 
+The examples below visualise results of the 30-Minute City of London and Padua, where the streets with darker colour means one can travel to essential services with less time.
+
 ### London
 
-<!-- ![BraTS2021_00203](https://raw.githubusercontent.com/marcohoucheng/Brain-Tumor-Segmentation-with-Computer-Vision/main/Sample%20Gifs/BraTS2021_00203.gif) -->
+![London 30-Minute City Heatmap](https://raw.githubusercontent.com/marcohoucheng/Algorithmic-Approach-to-the-15-Minute-City/main/images/London_30tMC.jpeg)
+
 ### Padua
+
+![Padua 30-Minute City Heatmap](https://raw.githubusercontent.com/marcohoucheng/Algorithmic-Approach-to-the-15-Minute-City/main/images/Padua_30tMC.jpg)
