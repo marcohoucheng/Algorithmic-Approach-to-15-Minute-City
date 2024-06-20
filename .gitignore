@@ -17,8 +17,9 @@ cache/
 **.nav
 archive/
 analysis/
-images/
+images/full_size/
 test cases/data/
+test cases/images/
 test cases/Images from papers/
 min_city/data/
 min_city/output.csv
